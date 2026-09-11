@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react'
+import TopBar from '@/components/TopBar'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -38,25 +39,29 @@ export default function AdminPage() {
   }
 
   return (
-    <main className="flex min-h-svh items-center justify-center">
-      <Card className="w-full max-w-sm">
-        <CardHeader>
-          <CardTitle>Deploy</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="tag">Image tag</Label>
-              <Input id="tag" value={tag} onChange={(e) => setTag(e.target.value)} required />
-            </div>
-            {status.kind === 'success' && <p className="text-sm">{status.message}</p>}
-            {status.kind === 'error' && <p className="text-sm text-destructive">{status.message}</p>}
-            <Button type="submit" disabled={submitting}>
-              {submitting ? 'Deploying...' : 'Deploy'}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
-    </main>
+    <div className="min-h-svh bg-background">
+      <TopBar />
+      <main className="mx-auto max-w-6xl px-6 py-10">
+        <h1 className="mb-6 text-base font-bold">Admin</h1>
+        <Card className="w-full max-w-sm">
+          <CardHeader>
+            <CardTitle>Deploy</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="tag">Image tag</Label>
+                <Input id="tag" value={tag} onChange={(e) => setTag(e.target.value)} required />
+              </div>
+              {status.kind === 'success' && <p className="text-sm">{status.message}</p>}
+              {status.kind === 'error' && <p className="text-sm text-destructive">{status.message}</p>}
+              <Button type="submit" disabled={submitting}>
+                {submitting ? 'Deploying...' : 'Deploy'}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </main>
+    </div>
   )
 }

@@ -1,25 +1,31 @@
-import { Link } from 'react-router-dom'
-import { useAuth } from '@/auth/AuthContext'
-import { Button } from '@/components/ui/button'
+import { BeerIcon, ClockIcon, FuelIcon, GearIcon, InventoryIcon, NotesIcon, PinIcon } from '@/components/icons'
+import TopBar from '@/components/TopBar'
+import FeatureTile from '@/components/FeatureTile'
 
-// Minimal landing page shown after a successful login - reaching this
-// page at all is the end-to-end smoke test (build -> deploy -> auth),
-// nothing else to prove or show here.
+// One tile per urs-android feature, "soon" until it's actually ported to
+// urs-web (add `href` once a feature gets a real route).
+const FEATURES = [
+  { name: 'Fuel', icon: FuelIcon },
+  { name: 'Inventory', icon: InventoryIcon },
+  { name: 'Beer log', icon: BeerIcon },
+  { name: 'Work time', icon: ClockIcon },
+  { name: 'Life map', icon: PinIcon },
+  { name: 'Notes', icon: NotesIcon },
+  { name: 'Settings', icon: GearIcon },
+]
+
 export default function LandingPage() {
-  const { logout, isSuperUser } = useAuth()
-
   return (
-    <main className="flex min-h-svh flex-col items-center justify-center gap-4">
-      <h1 className="text-2xl font-medium">urs</h1>
-      <p>Logged in ✓</p>
-      {isSuperUser && (
-        <Link to="/admin" className="text-sm underline">
-          Admin
-        </Link>
-      )}
-      <Button onClick={logout} variant="outline">
-        Log out
-      </Button>
-    </main>
+    <div className="min-h-svh bg-background">
+      <TopBar />
+      <main className="mx-auto max-w-6xl px-6 py-10">
+        <h1 className="mb-6 text-base font-bold">Home</h1>
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-4">
+          {FEATURES.map((feature) => (
+            <FeatureTile key={feature.name} {...feature} />
+          ))}
+        </div>
+      </main>
+    </div>
   )
 }

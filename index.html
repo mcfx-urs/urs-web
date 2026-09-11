@@ -5,6 +5,14 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>urs</title>
+    <script>
+      // Follows the system theme until a manual toggle exists (matches
+      // urs-android's default "System" setting) - runs before paint to
+      // avoid a light/dark flash.
+      if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.documentElement.classList.add('dark')
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>
