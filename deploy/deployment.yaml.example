@@ -1,0 +1,42 @@
+# Real file: deploy/deployment.yaml (untracked, see .git/info/exclude).
+# Copy this template and fill in the placeholders for each environment
+# (staging and prod each get their own deploy/*.yaml, untracked).
+# Naming mirrors urs-backend's resources/k8s/deployment.yml.template
+# convention: everything named ${PREFIX}urs-web (stg-urs-web /
+# prod-urs-web), shared "urs" namespace, disambiguated by prefix only.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: <PREFIX>urs-web # stg-urs-web / prod-urs-web
+  namespace: urs
+  labels:
+    app: <PREFIX>urs-web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: <PREFIX>urs-web
+  template:
+    metadata:
+      labels:
+        app: <PREFIX>urs-web
+    spec:
+      # ghcr.io package is private (private repo) - image pulls need
+      # credentials. Create a `kubernetes.io/dockerconfigjson` Secret
+      # from a PAT with `read:packages` scope and reference it here.
+      imagePullSecrets:
+        - name: <IMAGE_PULL_SECRET_NAME>
+      containers:
+        - name: <PREFIX>urs-web # must match the container name urs-backend's
+          # admin deploy endpoint patches - see urs-backend's
+          # URS_WEB_DEPLOYMENT env var, which is set to this same name.
+          image: ghcr.io/3lefeint/urs-web:<IMAGE_TAG> # stg / vX.Y.Z
+          imagePullPolicy: Always # tags are moving (stg) or re-deployed; always re-check the registry
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              memory: 128Mi
