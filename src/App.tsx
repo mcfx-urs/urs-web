@@ -2,6 +2,8 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import { useAuth } from '@/auth/AuthContext'
 import AdminPage from '@/pages/AdminPage'
 import ChoresPage from '@/pages/ChoresPage'
+import InventoriesPage from '@/pages/InventoriesPage'
+import InventoryDetailPage from '@/pages/InventoryDetailPage'
 import LandingPage from '@/pages/LandingPage'
 import LoginPage from '@/pages/LoginPage'
 import NoteFormPage from '@/pages/NoteFormPage'
@@ -32,6 +34,8 @@ function App() {
       <Route path="/chores" element={<ChoresPage />} />
       <Route path="/chores/types/new" element={<TrackerTypeFormPage />} />
       <Route path="/chores/types/:id" element={<TrackerTypeFormPage />} />
+      <Route path="/inventory" element={<InventoriesPage />} />
+      <Route path="/inventory/:id" element={<InventoryDetailPage />} />
       <Route path="/admin" element={isSuperUser ? <AdminPage /> : <Navigate to="/" replace />} />
     </Routes>
   )

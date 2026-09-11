@@ -1,4 +1,4 @@
-import { ChoresIcon, NotesIcon } from '@/components/icons'
+import { ChoresIcon, InventoryIcon, NotesIcon } from '@/components/icons'
 import TopBar from '@/components/TopBar'
 import FeatureTile from '@/components/FeatureTile'
 
@@ -8,6 +8,7 @@ import FeatureTile from '@/components/FeatureTile'
 const FEATURES = [
   { name: 'Notes', icon: NotesIcon, href: '/notes' },
   { name: 'Chores', icon: ChoresIcon, href: '/chores' },
+  { name: 'Inventory', icon: InventoryIcon, href: '/inventory' },
 ]
 
 export default function LandingPage() {
