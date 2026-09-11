@@ -1,11 +1,11 @@
-import type { ComponentType } from 'react'
+import { NotesIcon } from '@/components/icons'
 import TopBar from '@/components/TopBar'
 import FeatureTile from '@/components/FeatureTile'
 
 // Only features that are actually ported get a tile - no "coming soon"
 // placeholders. Add an entry (with its real route as `href`) when a
 // feature ships; nothing waits here unbuilt.
-const FEATURES: { name: string; icon: ComponentType<{ className?: string }>; href: string }[] = []
+const FEATURES = [{ name: 'Notes', icon: NotesIcon, href: '/notes' }]
 
 export default function LandingPage() {
   return (
