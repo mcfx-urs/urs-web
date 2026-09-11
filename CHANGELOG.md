@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Inventory feature: inventories, product grid with quantity tracking, low-stock thresholds, reminders, sharing (#6)
 - Shopping List feature: lists, item grid grouped by category, notes/quantity/on-sale, recently-used quick-add, sharing (#7)
 - Life Map feature: read-only GPS history view with time-range filter, gradient track, muted map style (#8)
+- Work Time feature: entries with breaks, monthly hours/wage summary, month overrides, wage-rule settings (#9)
 
 ## [0.1.0] - 2026-09-11
 
