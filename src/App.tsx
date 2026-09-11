@@ -8,6 +8,8 @@ import LandingPage from '@/pages/LandingPage'
 import LoginPage from '@/pages/LoginPage'
 import NoteFormPage from '@/pages/NoteFormPage'
 import NotesPage from '@/pages/NotesPage'
+import ShoppingListDetailPage from '@/pages/ShoppingListDetailPage'
+import ShoppingListsPage from '@/pages/ShoppingListsPage'
 import TrackerTypeFormPage from '@/pages/TrackerTypeFormPage'
 
 function App() {
@@ -36,6 +38,8 @@ function App() {
       <Route path="/chores/types/:id" element={<TrackerTypeFormPage />} />
       <Route path="/inventory" element={<InventoriesPage />} />
       <Route path="/inventory/:id" element={<InventoryDetailPage />} />
+      <Route path="/shopping" element={<ShoppingListsPage />} />
+      <Route path="/shopping/:id" element={<ShoppingListDetailPage />} />
       <Route path="/admin" element={isSuperUser ? <AdminPage /> : <Navigate to="/" replace />} />
     </Routes>
   )

@@ -38,6 +38,16 @@ export function InventoryIcon({ className }: IconProps) {
   )
 }
 
+export function ShoppingListIcon({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M6 8h14l-1.5 9a2 2 0 0 1-2 1.7H9.5a2 2 0 0 1-2-1.7L6 8Z" />
+      <path d="M9 8V6a3 3 0 0 1 6 0v2" />
+      <line x1="4" y1="8" x2="6" y2="8" />
+    </svg>
+  )
+}
+
 export function BeerIcon({ className }: IconProps) {
   return (
     <svg {...base} className={className}>
