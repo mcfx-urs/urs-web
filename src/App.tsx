@@ -5,6 +5,7 @@ import ChoresPage from '@/pages/ChoresPage'
 import InventoriesPage from '@/pages/InventoriesPage'
 import InventoryDetailPage from '@/pages/InventoryDetailPage'
 import LandingPage from '@/pages/LandingPage'
+import LifeMapPage from '@/pages/LifeMapPage'
 import LoginPage from '@/pages/LoginPage'
 import NoteFormPage from '@/pages/NoteFormPage'
 import NotesPage from '@/pages/NotesPage'
@@ -40,6 +41,7 @@ function App() {
       <Route path="/inventory/:id" element={<InventoryDetailPage />} />
       <Route path="/shopping" element={<ShoppingListsPage />} />
       <Route path="/shopping/:id" element={<ShoppingListDetailPage />} />
+      <Route path="/life-map" element={<LifeMapPage />} />
       <Route path="/admin" element={isSuperUser ? <AdminPage /> : <Navigate to="/" replace />} />
     </Routes>
   )

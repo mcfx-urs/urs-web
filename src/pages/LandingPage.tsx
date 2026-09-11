@@ -1,4 +1,4 @@
-import { ChoresIcon, InventoryIcon, NotesIcon, ShoppingListIcon } from '@/components/icons'
+import { ChoresIcon, InventoryIcon, NotesIcon, PinIcon, ShoppingListIcon } from '@/components/icons'
 import TopBar from '@/components/TopBar'
 import FeatureTile from '@/components/FeatureTile'
 
@@ -10,6 +10,7 @@ const FEATURES = [
   { name: 'Chores', icon: ChoresIcon, href: '/chores' },
   { name: 'Inventory', icon: InventoryIcon, href: '/inventory' },
   { name: 'Shopping List', icon: ShoppingListIcon, href: '/shopping' },
+  { name: 'Life Map', icon: PinIcon, href: '/life-map' },
 ]
 
 export default function LandingPage() {

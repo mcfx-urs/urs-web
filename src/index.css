@@ -98,3 +98,12 @@
     @apply font-sans;
     }
 }
+
+/*
+ * Desaturates the base map tiles on the Life Map page so a coloured track
+ * stands out - CSS-filter approximation of urs-android's MUTED_TILE_FILTER
+ * ColorMatrix, applied to Leaflet's tile pane rather than the track itself.
+ */
+.life-map-muted .leaflet-tile-pane {
+    filter: saturate(0.35) brightness(1.25);
+}
