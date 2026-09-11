@@ -1,8 +1,18 @@
+import { Navigate, Route, Routes } from 'react-router-dom'
+import { useAuth } from '@/auth/AuthContext'
+import LandingPage from '@/pages/LandingPage'
+import LoginPage from '@/pages/LoginPage'
+
 function App() {
+  const { isAuthenticated, ready } = useAuth()
+
+  if (!ready) return null
+
   return (
-    <main className="flex min-h-svh items-center justify-center">
-      <h1 className="text-2xl font-medium">urs</h1>
-    </main>
+    <Routes>
+      <Route path="/login" element={isAuthenticated ? <Navigate to="/" replace /> : <LoginPage />} />
+      <Route path="/" element={isAuthenticated ? <LandingPage /> : <Navigate to="/login" replace />} />
+    </Routes>
   )
 }
 

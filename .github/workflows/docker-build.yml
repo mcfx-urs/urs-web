@@ -37,3 +37,5 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            VITE_API_BASE_URL=${{ github.ref == 'refs/heads/master' && 'https://urs-backend.mcfx.ch' || 'https://urs-backend-stg.mcfx.ch' }}
