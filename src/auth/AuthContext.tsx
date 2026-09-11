@@ -1,11 +1,16 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
+import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { refresh } from '@/lib/api'
 import { getAccessToken, setAccessToken, subscribeAccessToken } from '@/lib/auth-token'
+import { decodeAccessTokenClaims } from '@/lib/jwt'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL as string
 
 type AuthContextValue = {
   isAuthenticated: boolean
+  // UI-only gate (hide/show the admin page) - the real boundary is
+  // server-side (requireSuperUser), this just avoids showing controls a
+  // non-super-user can't use anyway.
+  isSuperUser: boolean
   // true once the initial silent-refresh attempt (restoring a session
   // from the httpOnly cookie on page load) has finished either way.
   ready: boolean
@@ -24,6 +29,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     refresh().finally(() => setReady(true))
   }, [])
+
+  const isSuperUser = useMemo(() => (token ? (decodeAccessTokenClaims(token)?.is_super_user ?? false) : false), [token])
 
   async function login(userName: string, password: string) {
     const res = await fetch(`${API_BASE_URL}/api/v1/login`, {
@@ -44,7 +51,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated: token !== null, ready, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated: token !== null, isSuperUser, ready, login, logout }}>
       {children}
     </AuthContext.Provider>
   )
