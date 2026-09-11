@@ -1,7 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { useAuth } from '@/auth/AuthContext'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
@@ -26,12 +25,14 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="flex min-h-svh items-center justify-center">
-      <Card className="w-full max-w-sm">
-        <CardHeader>
-          <CardTitle>urs</CardTitle>
-        </CardHeader>
-        <CardContent>
+    <main className="flex min-h-svh items-center justify-center bg-background p-6">
+      <div className="flex w-full max-w-3xl overflow-hidden rounded-xl border border-border shadow-lg">
+        <div className="hidden flex-1 flex-col items-center justify-center gap-4 bg-primary p-10 text-primary-foreground sm:flex">
+          <img src="/bear-logo.png" alt="" width={96} height={96} className="rounded-lg" />
+          <span className="text-3xl font-extrabold">urs</span>
+        </div>
+        <div className="flex flex-1 flex-col justify-center gap-4 bg-card p-10">
+          <h1 className="text-base font-bold">Log in</h1>
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <div className="flex flex-col gap-2">
               <Label htmlFor="user_name">Username</Label>
@@ -59,8 +60,8 @@ export default function LoginPage() {
               {submitting ? 'Logging in...' : 'Log in'}
             </Button>
           </form>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </main>
   )
 }
