@@ -9,6 +9,15 @@ const base = {
   strokeLinejoin: 'round' as const,
 }
 
+export function ChoresIcon({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <rect x="4" y="4" width="16" height="16" rx="2" />
+      <path d="m8 12 2.5 2.5L16 9" />
+    </svg>
+  )
+}
+
 export function FuelIcon({ className }: IconProps) {
   return (
     <svg {...base} className={className}>
