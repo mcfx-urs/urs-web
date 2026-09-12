@@ -26,6 +26,8 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ghcr.io/${{ github.repository }}
+          flavor: |
+            latest=false
           tags: |
             type=raw,value=stg,enable=${{ github.ref == 'refs/heads/testing' }}
             type=raw,value=latest,enable=${{ github.ref == 'refs/heads/master' }}
@@ -38,4 +40,4 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            VITE_API_BASE_URL=${{ github.ref == 'refs/heads/master' && 'https://urs-backend.mcfx.ch' || 'https://urs-backend-stg.mcfx.ch' }}
+            VITE_API_BASE_URL=${{ (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')) && 'https://urs-backend.mcfx.ch' || 'https://urs-backend-stg.mcfx.ch' }}
