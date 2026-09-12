@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-09-12
+
 ### Added
 - Inventory feature: inventories, product grid with quantity tracking, low-stock thresholds, reminders, sharing (#6)
 - Shopping List feature: lists, item grid grouped by category, notes/quantity/on-sale, recently-used quick-add, sharing (#7)
