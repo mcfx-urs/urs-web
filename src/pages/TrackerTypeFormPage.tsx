@@ -61,7 +61,7 @@ function TrackerTypeForm({ existing }: { existing?: TrackerType }) {
   )
 
   const saveMutation = useMutation({
-    mutationFn: () => {
+    mutationFn: async () => {
       const input = {
         tracker_type_name: name,
         tracker_type_color: color,
@@ -69,7 +69,11 @@ function TrackerTypeForm({ existing }: { existing?: TrackerType }) {
         tracker_type_calendar: calendar || undefined,
         tracker_type_expected_interval_days: intervalDays ? Number(intervalDays) : undefined,
       }
-      return isEditing && existing ? updateTrackerType(existing.tracker_type_id, input) : createTrackerType(input)
+      if (isEditing && existing) {
+        await updateTrackerType(existing.tracker_type_id, input)
+      } else {
+        await createTrackerType(input)
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tracker-types'] })

@@ -2,11 +2,19 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import { useAuth } from '@/auth/AuthContext'
 import AdminPage from '@/pages/AdminPage'
 import ChoresPage from '@/pages/ChoresPage'
+import InventoriesPage from '@/pages/InventoriesPage'
+import InventoryDetailPage from '@/pages/InventoryDetailPage'
 import LandingPage from '@/pages/LandingPage'
+import LifeMapPage from '@/pages/LifeMapPage'
 import LoginPage from '@/pages/LoginPage'
 import NoteFormPage from '@/pages/NoteFormPage'
 import NotesPage from '@/pages/NotesPage'
+import ShoppingListDetailPage from '@/pages/ShoppingListDetailPage'
+import ShoppingListsPage from '@/pages/ShoppingListsPage'
 import TrackerTypeFormPage from '@/pages/TrackerTypeFormPage'
+import WorkTimeEntryFormPage from '@/pages/WorkTimeEntryFormPage'
+import WorkTimePage from '@/pages/WorkTimePage'
+import WorkTimeSettingsPage from '@/pages/WorkTimeSettingsPage'
 
 function App() {
   const { isAuthenticated, isSuperUser, ready } = useAuth()
@@ -32,6 +40,15 @@ function App() {
       <Route path="/chores" element={<ChoresPage />} />
       <Route path="/chores/types/new" element={<TrackerTypeFormPage />} />
       <Route path="/chores/types/:id" element={<TrackerTypeFormPage />} />
+      <Route path="/inventory" element={<InventoriesPage />} />
+      <Route path="/inventory/:id" element={<InventoryDetailPage />} />
+      <Route path="/shopping" element={<ShoppingListsPage />} />
+      <Route path="/shopping/:id" element={<ShoppingListDetailPage />} />
+      <Route path="/life-map" element={<LifeMapPage />} />
+      <Route path="/worktime" element={<WorkTimePage />} />
+      <Route path="/worktime/settings" element={<WorkTimeSettingsPage />} />
+      <Route path="/worktime/new" element={<WorkTimeEntryFormPage />} />
+      <Route path="/worktime/:id" element={<WorkTimeEntryFormPage />} />
       <Route path="/admin" element={isSuperUser ? <AdminPage /> : <Navigate to="/" replace />} />
     </Routes>
   )

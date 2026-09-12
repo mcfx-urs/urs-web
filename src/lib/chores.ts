@@ -61,13 +61,13 @@ export async function createTrackerType(input: TrackerTypeInput): Promise<Tracke
   return json(res, 'create chore type')
 }
 
-export async function updateTrackerType(id: string, input: TrackerTypeInput): Promise<TrackerType> {
+export async function updateTrackerType(id: string, input: TrackerTypeInput): Promise<void> {
   const res = await apiFetch(`/api/v1/tracker-type/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(input),
   })
-  return json(res, 'update chore type')
+  if (!res.ok) throw new Error(`update chore type failed (${res.status})`)
 }
 
 export async function archiveTrackerType(id: string): Promise<void> {
@@ -75,9 +75,9 @@ export async function archiveTrackerType(id: string): Promise<void> {
   if (!res.ok) throw new Error(`archive chore type failed (${res.status})`)
 }
 
-export async function reactivateTrackerType(id: string): Promise<TrackerType> {
+export async function reactivateTrackerType(id: string): Promise<void> {
   const res = await apiFetch(`/api/v1/tracker-type/${id}/reactivate`, { method: 'PUT' })
-  return json(res, 'reactivate chore type')
+  if (!res.ok) throw new Error(`reactivate chore type failed (${res.status})`)
 }
 
 export async function fetchTrackerEvents(from: string, to: string): Promise<TrackerEvent[]> {
@@ -94,13 +94,13 @@ export async function createTrackerEvent(input: TrackerEventInput): Promise<Trac
   return json(res, 'log chore event')
 }
 
-export async function updateTrackerEvent(id: string, input: TrackerEventInput): Promise<TrackerEvent> {
+export async function updateTrackerEvent(id: string, input: TrackerEventInput): Promise<void> {
   const res = await apiFetch(`/api/v1/tracker-event/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(input),
   })
-  return json(res, 'update chore event')
+  if (!res.ok) throw new Error(`update chore event failed (${res.status})`)
 }
 
 export async function deleteTrackerEvent(id: string): Promise<void> {

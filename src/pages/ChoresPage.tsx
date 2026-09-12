@@ -41,12 +41,12 @@ function sinceText(lastDone: string | null): string {
 }
 
 export default function ChoresPage() {
-  const queryClient = useQueryClient()
   const [monthCursor, setMonthCursor] = useState(() => {
     const now = new Date()
     return { year: now.getFullYear(), month: now.getMonth() }
   })
   const [selectedDay, setSelectedDay] = useState<string | null>(null)
+  const [initialLogTypeId, setInitialLogTypeId] = useState<string | null>(null)
 
   const { data: types } = useQuery({ queryKey: ['tracker-types'], queryFn: fetchTrackerTypes })
   const activeTypes = useMemo(() => (types ?? []).filter((t) => !t.tracker_type_archived_at), [types])
@@ -76,17 +76,9 @@ export default function ChoresPage() {
     return map
   }, [recentEvents, monthStartIso, to])
 
-  const logMutation = useMutation({
-    mutationFn: (typeId: string) =>
-      createTrackerEvent({
-        tracker_event_tracker_type_id: typeId,
-        tracker_event_occurred_on: formatDateISO(new Date()),
-      }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tracker-events'] }),
-  })
-
   const grid = monthGrid(monthCursor.year, monthCursor.month)
   const monthLabel = monthStart.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+  const todayIso = formatDateISO(new Date())
 
   return (
     <div className="min-h-svh bg-background">
@@ -135,8 +127,13 @@ export default function ChoresPage() {
                 <button
                   type="button"
                   key={iso}
-                  onClick={() => setSelectedDay(iso)}
-                  className="flex min-h-14 flex-col items-center gap-1 rounded-lg p-1 text-xs hover:bg-muted"
+                  onClick={() => {
+                    setSelectedDay(iso)
+                    setInitialLogTypeId(null)
+                  }}
+                  className={`flex min-h-14 flex-col items-center gap-1 rounded-lg p-1 text-xs hover:bg-muted ${
+                    iso === todayIso ? 'border-2 border-primary' : 'border-2 border-transparent'
+                  }`}
                 >
                   <span>{date.getDate()}</span>
                   <div className="flex flex-wrap justify-center gap-0.5">
@@ -184,7 +181,13 @@ export default function ChoresPage() {
                 )}
                 <span className="text-xs text-muted-foreground">{sinceText(lastDone)}</span>
               </div>
-              <Button size="sm" onClick={() => logMutation.mutate(type.tracker_type_id)} disabled={logMutation.isPending}>
+              <Button
+                size="sm"
+                onClick={() => {
+                  setSelectedDay(todayIso)
+                  setInitialLogTypeId(type.tracker_type_id)
+                }}
+              >
                 Log now
               </Button>
               <Link
@@ -201,19 +204,36 @@ export default function ChoresPage() {
 
       <Dialog open={selectedDay !== null} onOpenChange={(open) => !open && setSelectedDay(null)}>
         {selectedDay && (
-          <DayDialog day={selectedDay} events={eventsByDay.get(selectedDay) ?? []} types={types ?? []} />
+          <DayDialog
+            day={selectedDay}
+            events={eventsByDay.get(selectedDay) ?? []}
+            types={types ?? []}
+            initialTypeId={initialLogTypeId}
+          />
         )}
       </Dialog>
     </div>
   )
 }
 
-function DayDialog({ day, events, types }: { day: string; events: TrackerEvent[]; types: TrackerType[] }) {
+function DayDialog({
+  day,
+  events,
+  types,
+  initialTypeId,
+}: {
+  day: string
+  events: TrackerEvent[]
+  types: TrackerType[]
+  initialTypeId?: string | null
+}) {
   const queryClient = useQueryClient()
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editTime, setEditTime] = useState('')
   const [editNote, setEditNote] = useState('')
-  const [logTypeId, setLogTypeId] = useState(types[0]?.tracker_type_id ?? '')
+  const [logTypeId, setLogTypeId] = useState(initialTypeId ?? types[0]?.tracker_type_id ?? '')
+  const [logTime, setLogTime] = useState('')
+  const [logNote, setLogNote] = useState('')
 
   const updateMutation = useMutation({
     mutationFn: (vars: { id: string; typeId: string }) =>
@@ -236,8 +256,17 @@ function DayDialog({ day, events, types }: { day: string; events: TrackerEvent[]
 
   const logHereMutation = useMutation({
     mutationFn: (typeId: string) =>
-      createTrackerEvent({ tracker_event_tracker_type_id: typeId, tracker_event_occurred_on: day }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tracker-events'] }),
+      createTrackerEvent({
+        tracker_event_tracker_type_id: typeId,
+        tracker_event_occurred_on: day,
+        tracker_event_occurred_at: logTime || undefined,
+        tracker_event_note: logNote || undefined,
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tracker-events'] })
+      setLogTime('')
+      setLogNote('')
+    },
   })
 
   const sorted = [...events].sort((a, b) => (a.tracker_event_occurred_at ?? '').localeCompare(b.tracker_event_occurred_at ?? ''))
@@ -313,9 +342,9 @@ function DayDialog({ day, events, types }: { day: string; events: TrackerEvent[]
       </div>
 
       {types.length > 0 && (
-        <div className="flex gap-2 border-t border-border pt-3">
+        <div className="flex flex-col gap-2 border-t border-border pt-3">
           <select
-            className="flex-1 rounded-lg border border-border bg-background px-2 text-sm"
+            className="rounded-lg border border-border bg-background px-2 py-1.5 text-sm"
             value={logTypeId}
             onChange={(e) => setLogTypeId(e.target.value)}
           >
@@ -327,6 +356,8 @@ function DayDialog({ day, events, types }: { day: string; events: TrackerEvent[]
                 </option>
               ))}
           </select>
+          <Input type="time" value={logTime} onChange={(e) => setLogTime(e.target.value)} />
+          <Input placeholder="Note" value={logNote} onChange={(e) => setLogNote(e.target.value)} />
           <Button
             size="sm"
             onClick={() => logTypeId && logHereMutation.mutate(logTypeId)}
