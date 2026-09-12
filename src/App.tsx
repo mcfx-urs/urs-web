@@ -4,6 +4,8 @@ import AdminPage from '@/pages/AdminPage'
 import ChoresPage from '@/pages/ChoresPage'
 import InventoriesPage from '@/pages/InventoriesPage'
 import InventoryDetailPage from '@/pages/InventoryDetailPage'
+import KanbanBoardPage from '@/pages/KanbanBoardPage'
+import KanbanBoardsPage from '@/pages/KanbanBoardsPage'
 import LandingPage from '@/pages/LandingPage'
 import LifeMapPage from '@/pages/LifeMapPage'
 import LoginPage from '@/pages/LoginPage'
@@ -44,6 +46,8 @@ function App() {
       <Route path="/inventory/:id" element={<InventoryDetailPage />} />
       <Route path="/shopping" element={<ShoppingListsPage />} />
       <Route path="/shopping/:id" element={<ShoppingListDetailPage />} />
+      <Route path="/kanban" element={<KanbanBoardsPage />} />
+      <Route path="/kanban/:id" element={<KanbanBoardPage />} />
       <Route path="/life-map" element={<LifeMapPage />} />
       <Route path="/worktime" element={<WorkTimePage />} />
       <Route path="/worktime/settings" element={<WorkTimeSettingsPage />} />

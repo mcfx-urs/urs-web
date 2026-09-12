@@ -89,6 +89,19 @@ export function NotesIcon({ className }: IconProps) {
   )
 }
 
+export function KanbanIcon({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <rect x="4" y="4" width="16" height="16" rx="2" />
+      <line x1="10" y1="4" x2="10" y2="20" />
+      <line x1="16" y1="4" x2="16" y2="20" />
+      <line x1="6.5" y1="8" x2="7.5" y2="8" />
+      <line x1="12.5" y1="8" x2="13.5" y2="8" />
+      <line x1="18.5" y1="8" x2="18.5" y2="8" />
+    </svg>
+  )
+}
+
 export function GearIcon({ className }: IconProps) {
   return (
     <svg {...base} className={className}>

@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+- Kanban feature: boards, freely orderable columns and cards with drag-and-drop within and across columns, card detail (description, due date, priority, tags, checklist, optional linked note) (#11)
+
 ## [0.2.0] - 2026-09-12
 
 ### Added
