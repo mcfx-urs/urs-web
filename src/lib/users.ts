@@ -9,11 +9,9 @@ export type HouseholdUser = {
   user_lastname: string
 }
 
-// GET /api/v1/getuser returns every household user's full record (not
-// just the caller), including sensitive per-user fields (wage, tax
-// deductions, birthday) this UI has no use for - deliberately only
-// picking user_id/user_name/first/last name out of the response, never
-// storing or passing along the rest.
+// Only a subset of this endpoint's response fields is used here -
+// deliberately picking user_id/user_name/first/last name, never storing
+// or passing along anything else.
 export async function fetchHouseholdUsers(): Promise<HouseholdUser[]> {
   const res = await apiFetch('/api/v1/getuser')
   if (!res.ok) throw new Error(`load users failed (${res.status})`)

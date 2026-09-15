@@ -27,9 +27,8 @@ spec:
       imagePullSecrets:
         - name: <IMAGE_PULL_SECRET_NAME>
       containers:
-        - name: <PREFIX>urs-web # must match the container name urs-backend's
-          # admin deploy endpoint patches - see urs-backend's
-          # URS_WEB_DEPLOYMENT env var, which is set to this same name.
+        - name: <PREFIX>urs-web # must match the container name the deploy
+          # automation (see urs-backend#1) expects for this Deployment.
           image: ghcr.io/3lefeint/urs-web:<IMAGE_TAG> # stg / vX.Y.Z
           imagePullPolicy: Always # tags are moving (stg) or re-deployed; always re-check the registry
           ports:

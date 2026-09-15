@@ -10,7 +10,7 @@ type Status = { kind: 'idle' } | { kind: 'success'; message: string } | { kind: 
 
 // Triggers urs-backend's POST /api/v1/admin/deploy (see urs-backend#1) -
 // always redeploys THIS environment's own paired urs-web Deployment,
-// there's no way to pick a different one (see backend's URS_WEB_DEPLOYMENT).
+// there's no way to pick a different one.
 export default function AdminPage() {
   const [tag, setTag] = useState('stg')
   const [status, setStatus] = useState<Status>({ kind: 'idle' })

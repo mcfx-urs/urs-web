@@ -1,6 +1,5 @@
 # Real file: deploy/ingress.yaml (untracked, see .git/info/exclude).
-# Mirrors urs-backend's Ingress - the separate Traefik host forwards into
-# this cluster's ingress-nginx, which then routes on Host header.
+# Mirrors urs-backend's Ingress - routes to this Service by Host header.
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:

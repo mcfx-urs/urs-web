@@ -166,11 +166,10 @@ export async function clearMonthOverride(year: number, month: number): Promise<v
   if (!res.ok) throw new Error(`clear month override failed (${res.status})`)
 }
 
-// GET /api/v1/getuser returns every household user's full record, including
-// sensitive per-user fields - deliberately filtered down to the caller's own
-// user_id here, same approach lib/users.ts's fetchHouseholdUsers already
-// uses to narrow that same endpoint for ShareSheet. Only the caller's own
-// work settings are ever read into state or rendered.
+// Filtered down to the caller's own user_id here, same approach
+// lib/users.ts's fetchHouseholdUsers already uses to narrow this
+// endpoint's response for ShareSheet. Only the caller's own work
+// settings are ever read into state or rendered.
 export async function fetchWorkSettings(): Promise<WorkSettings> {
   const userId = currentUserId()
   const res = await apiFetch('/api/v1/getuser')
