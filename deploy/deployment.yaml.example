@@ -29,7 +29,7 @@ spec:
       containers:
         - name: <PREFIX>urs-web # must match the container name the deploy
           # automation (see urs-backend#1) expects for this Deployment.
-          image: ghcr.io/3lefeint/urs-web:<IMAGE_TAG> # stg / vX.Y.Z
+          image: ghcr.io/mcfx-urs/urs-web:<IMAGE_TAG> # stg / vX.Y.Z
           imagePullPolicy: Always # tags are moving (stg) or re-deployed; always re-check the registry
           ports:
             - containerPort: 80

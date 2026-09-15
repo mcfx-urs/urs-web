@@ -1,7 +1,7 @@
 # urs-web
 
 A browser companion (React/TypeScript SPA) to
-[urs-android](https://github.com/3lefeint/urs-android), part of the
+[urs-android](https://github.com/mcfx-urs/urs-android), part of the
 `urs` household-tracking app family — for the handful of tasks that
 are more comfortable on a keyboard than a phone screen. Talks directly
 to the same private backend API `urs-android` uses; usable only from
@@ -33,7 +33,7 @@ model and REST API:
   environment's own deployment straight from the browser.
 
 Not yet ported (tracked in
-[`urs-web`#4](https://github.com/3lefeint/urs-web/issues/4)): fuel,
+[`urs-web`#4](https://github.com/mcfx-urs/urs-web/issues/4)): fuel,
 beer log, baking, vehicle/service, and app-level settings.
 
 ## Architecture
@@ -69,8 +69,8 @@ npm run dev
 Docker images are built by GitHub Actions and deployed to Kubernetes.
 A push to `testing` deploys to staging, a push to `master` or a
 version tag deploys to production — see
-[urs-android](https://github.com/3lefeint/urs-android) and
-[urs-backend](https://github.com/3lefeint/urs-backend) for the rest of
+[urs-android](https://github.com/mcfx-urs/urs-android) and
+[urs-backend](https://github.com/mcfx-urs/urs-backend) for the rest of
 the family; the backend hosts a matching admin-triggered rollout
 endpoint used by the in-app Admin page above.
 
