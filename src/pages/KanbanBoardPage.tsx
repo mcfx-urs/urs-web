@@ -1,11 +1,14 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
+import { flushSync } from 'react-dom'
 import {
   DndContext,
+  DragOverlay,
   PointerSensor,
   useDroppable,
   useSensor,
   useSensors,
   type DragEndEvent,
+  type DragStartEvent,
 } from '@dnd-kit/core'
 import { SortableContext, horizontalListSortingStrategy, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
@@ -45,6 +48,7 @@ import {
   moveKanbanColumn,
   updateKanbanCard,
   updateKanbanChecklistItem,
+  type KanbanBoardDetail,
   type KanbanCard,
   type KanbanCardInput,
   type KanbanColumn,
@@ -67,6 +71,44 @@ const PRIORITY_DOT_COLOR: Record<KanbanPriority, string> = {
   low: 'bg-blue-500',
   medium: 'bg-yellow-500',
   high: 'bg-red-500',
+}
+
+// Optimistic local reorder, applied to the query cache synchronously the
+// instant a drag ends (see applyCardMove below) - mirrors exactly what
+// MoveKanbanCard does server-side (urs-backend-gitlab/src/data/db_kanban.go):
+// remove the card from wherever it is, then insert at targetIndex counting
+// only the *other* cards in targetColumnId. Without this, the real card
+// stays rendered in its old slot until the mutation's round trip resolves,
+// so DragOverlay's drop animation (which flies to wherever the real,
+// non-overlay item currently sits) flew back to the old column first.
+function reorderCardInBoard(board: KanbanBoardDetail, cardId: string, targetColumnId: string, targetIndex: number): KanbanBoardDetail {
+  let movedCard: KanbanCard | undefined
+  const withoutCard = board.columns.map((col) => {
+    const card = col.cards.find((c) => c.kanban_card_id === cardId)
+    if (!card) return col
+    movedCard = card
+    return { ...col, cards: col.cards.filter((c) => c.kanban_card_id !== cardId) }
+  })
+  if (!movedCard) return board
+  const updatedCard = { ...movedCard, kanban_card_column_id: targetColumnId }
+  return {
+    ...board,
+    columns: withoutCard.map((col) => {
+      if (col.kanban_column_id !== targetColumnId) return col
+      const cards = [...col.cards]
+      cards.splice(Math.max(0, Math.min(targetIndex, cards.length)), 0, updatedCard)
+      return { ...col, cards }
+    }),
+  }
+}
+
+/** Same reasoning as reorderCardInBoard above, for a column reorder. */
+function reorderColumnInBoard(board: KanbanBoardDetail, columnId: string, targetIndex: number): KanbanBoardDetail {
+  const moved = board.columns.find((c) => c.kanban_column_id === columnId)
+  if (!moved) return board
+  const columns = board.columns.filter((c) => c.kanban_column_id !== columnId)
+  columns.splice(Math.max(0, Math.min(targetIndex, columns.length)), 0, moved)
+  return { ...board, columns }
 }
 
 export default function KanbanBoardPage() {
@@ -111,10 +153,21 @@ export default function KanbanBoardPage() {
     })
   }
 
-  const { data: board, isLoading } = useQuery({
+  const { data: queryBoard, isLoading } = useQuery({
     queryKey: ['kanban-board', boardId],
     queryFn: () => fetchKanbanBoard(boardId),
   })
+
+  // Optimistic drag overlay for the board, kept as a plain, separate piece
+  // of React state rather than writing straight into the query cache - see
+  // applyCardMove's doc comment for why the cache route doesn't work here.
+  // localBoard takes over from queryBoard the instant a drag ends, and is
+  // cleared once the mutation's own refetch has landed fresh queryBoard data
+  // (not right when the mutation itself resolves - clearing any earlier
+  // would flash back to the stale pre-move queryBoard for one frame, before
+  // the refetch catches up).
+  const [localBoard, setLocalBoard] = useState<KanbanBoardDetail | null>(null)
+  const board = localBoard ?? queryBoard
 
   const invalidate = () => queryClient.invalidateQueries({ queryKey: ['kanban-board', boardId] })
 
@@ -132,10 +185,39 @@ export default function KanbanBoardPage() {
     onError: () => setError('Column still has cards - move or delete them first.'),
   })
 
-  const moveColumnMutation = useMutation({
-    mutationFn: ({ columnId, index }: { columnId: string; index: number }) => moveKanbanColumn(columnId, index),
-    onSuccess: invalidate,
-  })
+  // Column/card moves apply to localBoard synchronously via flushSync, not
+  // by writing into the query cache. Writing the reorder straight into the
+  // query cache (via queryClient.setQueryData, even inside flushSync) was
+  // tried first and confirmed - by instrumenting both the pure reorder
+  // output and the actual DOM position right after - not to work: the
+  // reordered data itself was correct, but the real card still rendered in
+  // its old column right after, because TanStack Query defers notifying
+  // useQuery's subscribers via its own notifyManager (a microtask), so no
+  // React state update is actually dispatched inside flushSync's callback
+  // for it to flush - the real re-render only lands microtasks later, by
+  // which point DragOverlay's drop animation had already measured the
+  // stale position and started flying there. A plain useState (localBoard)
+  // sidesteps that scheduling layer entirely; setting it is a synchronous
+  // React update flushSync can actually flush.
+  function applyColumnMove(columnId: string, index: number) {
+    if (!board) return
+    const reordered = reorderColumnInBoard(board, columnId, index)
+    flushSync(() => setLocalBoard(reordered))
+    moveKanbanColumn(columnId, index)
+      .then(() => queryClient.invalidateQueries({ queryKey: ['kanban-board', boardId] }))
+      .catch(() => setError('Could not move the column.'))
+      .finally(() => setLocalBoard(null))
+  }
+
+  function applyCardMove(cardId: string, columnId: string, index: number) {
+    if (!board) return
+    const reordered = reorderCardInBoard(board, cardId, columnId, index)
+    flushSync(() => setLocalBoard(reordered))
+    moveKanbanCard(cardId, columnId, index)
+      .then(() => queryClient.invalidateQueries({ queryKey: ['kanban-board', boardId] }))
+      .catch(() => setError('Could not move the card.'))
+      .finally(() => setLocalBoard(null))
+  }
 
   const createCardMutation = useMutation({
     mutationFn: ({ columnId, title }: { columnId: string; title: string }) => createKanbanCard(columnId, { title }),
@@ -144,12 +226,6 @@ export default function KanbanBoardPage() {
       setAddingCardTo(null)
       setNewCardTitle('')
     },
-  })
-
-  const moveCardMutation = useMutation({
-    mutationFn: ({ cardId, columnId, index }: { cardId: string; columnId: string; index: number }) =>
-      moveKanbanCard(cardId, columnId, index),
-    onSuccess: invalidate,
   })
 
   const columns = useMemo(() => board?.columns ?? [], [board])
@@ -162,6 +238,27 @@ export default function KanbanBoardPage() {
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }))
 
+  // Drives DragOverlay below - a card/column being dragged renders its
+  // cursor-following visual there (a portal outside every column's own
+  // overflow-y-auto card list), not via its own inline transform. Without
+  // this, the dragged item's transform tried to move it past its column's
+  // bounds, but overflow-y-auto on that column (per the CSS overflow spec,
+  // one axis forces the other to non-visible too) clips overflow-x just as
+  // much, cutting the card off mid-drag - and gave dnd-kit's pointer-based
+  // auto-scroll a horizontally-scrollable ancestor to try scrolling
+  // instead of the actual board-level one.
+  const [activeId, setActiveId] = useState<string | null>(null)
+  const activeCard = activeId?.startsWith(CARD_PREFIX)
+    ? columns.flatMap((c) => c.cards).find((c) => c.kanban_card_id === activeId.slice(CARD_PREFIX.length))
+    : undefined
+  const activeColumn = activeId?.startsWith(COL_PREFIX)
+    ? columns.find((c) => c.kanban_column_id === activeId.slice(COL_PREFIX.length))
+    : undefined
+
+  function handleDragStart(event: DragStartEvent) {
+    setActiveId(String(event.active.id))
+  }
+
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event
     if (!over) return
@@ -169,33 +266,54 @@ export default function KanbanBoardPage() {
     const overId = String(over.id)
     if (activeId === overId) return
 
+    // Both the column and card `index` fields the backend accepts are
+    // positions within the *other* siblings, with the dragged item already
+    // removed (see MoveKanbanColumn/MoveKanbanCard in urs-backend-gitlab,
+    // both query "... WHERE id != draggedId" before inserting at `index`).
+    // `columns` here is still the untouched pre-drop board state, so a
+    // position read straight off it counts the dragged item itself too -
+    // shift down by one whenever the drop target sits after the dragged
+    // item's own current position, to land where the user actually dropped
+    // it instead of one slot further along. Same off-by-one class of bug
+    // urs-android had (fixed there in "Fix Kanban drag-and-drop not
+    // reliably saving column/position changes", 2026-09-14) - different
+    // drag mechanism (dnd-kit here vs. raw pointerInput there), same
+    // "the backend's index excludes the item being moved" mismatch.
     if (activeId.startsWith(COL_PREFIX)) {
       if (!overId.startsWith(COL_PREFIX)) return
       const columnId = activeId.slice(COL_PREFIX.length)
       const overColumnId = overId.slice(COL_PREFIX.length)
-      const newIndex = columns.findIndex((c) => c.kanban_column_id === overColumnId)
-      if (newIndex >= 0) moveColumnMutation.mutate({ columnId, index: newIndex })
+      if (overColumnId === columnId) return
+      const sourceIndex = columns.findIndex((c) => c.kanban_column_id === columnId)
+      let newIndex = columns.findIndex((c) => c.kanban_column_id === overColumnId)
+      if (sourceIndex < 0 || newIndex < 0) return
+      if (sourceIndex < newIndex) newIndex -= 1
+      applyColumnMove(columnId, newIndex)
       return
     }
 
     if (activeId.startsWith(CARD_PREFIX)) {
       const cardId = activeId.slice(CARD_PREFIX.length)
+      const source = cardIndexById.get(cardId)
+      if (!source) return
       let targetColumnId: string
       let targetIndex: number
       if (overId.startsWith(CARD_PREFIX)) {
         const overCardId = overId.slice(CARD_PREFIX.length)
-        const pos = cardIndexById.get(overCardId)
-        if (!pos) return
-        targetColumnId = pos.columnId
-        targetIndex = pos.index
+        if (overCardId === cardId) return
+        const overPos = cardIndexById.get(overCardId)
+        if (!overPos) return
+        targetColumnId = overPos.columnId
+        targetIndex = overPos.index
+        if (targetColumnId === source.columnId && source.index < targetIndex) targetIndex -= 1
       } else if (overId.startsWith(COL_PREFIX)) {
         targetColumnId = overId.slice(COL_PREFIX.length)
         const col = columns.find((c) => c.kanban_column_id === targetColumnId)
-        targetIndex = col?.cards.length ?? 0
+        targetIndex = (col?.cards.length ?? 0) - (targetColumnId === source.columnId ? 1 : 0)
       } else {
         return
       }
-      moveCardMutation.mutate({ cardId, columnId: targetColumnId, index: targetIndex })
+      applyCardMove(cardId, targetColumnId, targetIndex)
     }
   }
 
@@ -233,7 +351,15 @@ export default function KanbanBoardPage() {
         {isLoading && <p className="text-sm text-muted-foreground">Loading...</p>}
 
         {!isLoading && (
-          <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+          <DndContext
+            sensors={sensors}
+            onDragStart={handleDragStart}
+            onDragEnd={(event) => {
+              handleDragEnd(event)
+              setActiveId(null)
+            }}
+            onDragCancel={() => setActiveId(null)}
+          >
             <SortableContext items={columns.map((c) => COL_PREFIX + c.kanban_column_id)} strategy={horizontalListSortingStrategy}>
               <div className="flex flex-1 gap-4 overflow-x-auto pb-4">
                 {columns.map((column) => (
@@ -270,6 +396,18 @@ export default function KanbanBoardPage() {
                 </form>
               </div>
             </SortableContext>
+
+            {/*
+              Default dropAnimation flies to wherever the real (non-overlay)
+              sortable item currently sits - correct now that applyCardMove/
+              applyColumnMove flushSync the reorder into the query cache
+              synchronously on drop, so that item is already at its new slot,
+              committed to the DOM, by the time this animation starts.
+            */}
+            <DragOverlay>
+              {activeCard && <CardPreview card={activeCard} />}
+              {activeColumn && <ColumnPreview column={activeColumn} />}
+            </DragOverlay>
           </DndContext>
         )}
       </main>
@@ -370,7 +508,7 @@ function ColumnView({
         </button>
       </div>
 
-      <div ref={setDroppableRef} className="flex min-h-16 flex-1 flex-col gap-2 overflow-y-auto p-3">
+      <div ref={setDroppableRef} className="flex min-h-16 flex-1 flex-col gap-2 overflow-x-hidden overflow-y-auto p-3">
         <SortableContext items={column.cards.map((c) => CARD_PREFIX + c.kanban_card_id)} strategy={verticalListSortingStrategy}>
           {column.cards.map((card) => (
             <CardView key={card.kanban_card_id} card={card} onClick={() => onCardClick(card.kanban_card_id)} />
@@ -445,6 +583,55 @@ function CardView({ card, onClick }: { card: KanbanCard; onClick: () => void }) 
           {doneCount}/{card.checklist.length}
         </div>
       )}
+    </div>
+  )
+}
+
+/**
+ * Rendered inside DragOverlay (a portal outside every column's own
+ * overflow), not by CardView itself - CardView calls useSortable for the id
+ * that's already the active drag, so reusing it here would register that id
+ * twice. Same visual as CardView, no drag hooks, no onClick. Explicit width
+ * since a portal has no flex/grid parent to size against.
+ */
+function CardPreview({ card }: { card: KanbanCard }) {
+  const doneCount = card.checklist.filter((i) => i.kanban_checklist_item_done).length
+  return (
+    <div className="relative w-72 rounded-lg border border-primary bg-background p-2.5 text-left shadow-lg">
+      <span className={`absolute right-2 top-2 size-2 rounded-full ${PRIORITY_DOT_COLOR[card.kanban_card_priority]}`} />
+      <div className="pr-3 text-sm font-semibold">{card.kanban_card_title}</div>
+      {card.kanban_card_due_date && (
+        <div className="mt-1 text-[11px] text-muted-foreground">{card.kanban_card_due_date.slice(0, 10)}</div>
+      )}
+      {card.tags.length > 0 && (
+        <div className="mt-1 flex flex-wrap gap-1">
+          {card.tags.map((tag) => (
+            <span key={tag} className="rounded-full bg-muted px-1.5 py-0.5 text-[10px] text-muted-foreground">
+              {tag}
+            </span>
+          ))}
+        </div>
+      )}
+      {card.checklist.length > 0 && (
+        <div className="mt-1 text-[11px] text-muted-foreground">
+          {doneCount}/{card.checklist.length}
+        </div>
+      )}
+    </div>
+  )
+}
+
+/** Same DragOverlay reasoning as CardPreview above, for a dragged column. */
+function ColumnPreview({ column }: { column: KanbanColumn }) {
+  return (
+    <div className="flex w-72 flex-col gap-1 rounded-xl border border-primary bg-card p-3 shadow-lg">
+      <div className="flex items-center gap-2">
+        <GripVertical className="size-4 text-muted-foreground" />
+        <span className="flex-1 truncate text-sm font-bold">{column.kanban_column_name}</span>
+      </div>
+      <span className="text-xs text-muted-foreground">
+        {column.cards.length} card{column.cards.length === 1 ? '' : 's'}
+      </span>
     </div>
   )
 }
