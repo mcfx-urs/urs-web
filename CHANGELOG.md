@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
+- Changed the app-wide page background and card style to the glass-style look already used on the Kanban screens, rolled out incrementally page by page (#26)
 - Changed the Kanban card description field to a rich-text editor with the same markup toolbar as Notes (bold/italic/underline/link/bullet/numbered/indent), fixing it not behaving as a proper multi-line input (#16)
 - Changed Kanban columns and board cards (on both the board detail and boards list screens) from a flat bordered card to a glass-style look (subtle tinted fill, thin rim, soft inward-fading glow) against a diagonal background gradient, matching the mockup used for urs-android's own Kanban columns (#17)
 

@@ -1,6 +1,7 @@
 import { ChoresIcon, ClockIcon, InventoryIcon, KanbanIcon, NotesIcon, PinIcon, ShoppingListIcon } from '@/components/icons'
 import TopBar from '@/components/TopBar'
 import FeatureTile from '@/components/FeatureTile'
+import { GLASS_BACKGROUND_GRADIENT_CLASS } from '@/lib/glass-style'
 
 // Only features that are actually ported get a tile - no "coming soon"
 // placeholders. Add an entry (with its real route as `href`) when a
@@ -17,7 +18,7 @@ const FEATURES = [
 
 export default function LandingPage() {
   return (
-    <div className="min-h-svh bg-background">
+    <div className={`min-h-svh bg-background ${GLASS_BACKGROUND_GRADIENT_CLASS}`}>
       <TopBar />
       <main className="mx-auto max-w-6xl px-6 py-10">
         <h1 className="mb-6 text-base font-bold">Home</h1>

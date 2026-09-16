@@ -5,7 +5,7 @@ import TopBar from '@/components/TopBar'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { createKanbanBoard, deleteKanbanBoard, fetchKanbanBoards, renameKanbanBoard } from '@/lib/kanban'
-import { KANBAN_BACKGROUND_GRADIENT_CLASS, KANBAN_GLASS_CARD_CLASS } from '@/lib/kanban-glass'
+import { GLASS_BACKGROUND_GRADIENT_CLASS, GLASS_CARD_CLASS } from '@/lib/glass-style'
 
 export default function KanbanBoardsPage() {
   const queryClient = useQueryClient()
@@ -42,7 +42,7 @@ export default function KanbanBoardsPage() {
   }
 
   return (
-    <div className={`min-h-svh bg-background ${KANBAN_BACKGROUND_GRADIENT_CLASS}`}>
+    <div className={`min-h-svh bg-background ${GLASS_BACKGROUND_GRADIENT_CLASS}`}>
       <TopBar />
       <main className="mx-auto max-w-3xl px-6 py-10">
         <h1 className="mb-6 text-base font-bold">Kanban boards</h1>
@@ -59,7 +59,7 @@ export default function KanbanBoardsPage() {
 
         <div className="flex flex-col gap-3">
           {boards?.map((board) => (
-            <div key={board.kanban_board_id} className={`rounded-xl p-4 ${KANBAN_GLASS_CARD_CLASS}`}>
+            <div key={board.kanban_board_id} className={`rounded-xl p-4 ${GLASS_CARD_CLASS}`}>
               <div className="flex items-center justify-between gap-3">
                 {renamingId === board.kanban_board_id ? (
                   <form

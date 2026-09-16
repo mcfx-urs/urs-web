@@ -54,7 +54,7 @@ import {
   type KanbanColumn,
   type KanbanPriority,
 } from '@/lib/kanban'
-import { KANBAN_BACKGROUND_GRADIENT_CLASS, KANBAN_GLASS_CARD_CLASS } from '@/lib/kanban-glass'
+import { GLASS_BACKGROUND_GRADIENT_CLASS, GLASS_CARD_CLASS } from '@/lib/glass-style'
 import { fetchNotes } from '@/lib/notes'
 import {
   indentCurrentLine,
@@ -74,7 +74,7 @@ const PRIORITY_DOT_COLOR: Record<KanbanPriority, string> = {
   high: 'bg-red-500',
 }
 
-// Glass-style column look - see kanban-glass.ts for the shared constants
+// Glass-style column look - see glass-style.ts for the shared constants
 // (also used by KanbanBoardsPage) and their full history.
 
 // Optimistic local reorder, applied to the query cache synchronously the
@@ -327,7 +327,7 @@ export default function KanbanBoardPage() {
   }
 
   return (
-    <div className={`flex h-svh flex-col bg-background ${KANBAN_BACKGROUND_GRADIENT_CLASS}`}>
+    <div className={`flex h-svh flex-col bg-background ${GLASS_BACKGROUND_GRADIENT_CLASS}`}>
       <TopBar />
       <main className="flex flex-1 flex-col overflow-hidden px-6 py-6">
         <div className="mx-auto mb-4 flex w-full max-w-6xl shrink-0 items-center justify-between">
@@ -478,7 +478,7 @@ function ColumnView({
   // droppable ref) so a card can be dropped here without expanding first.
   if (collapsed) {
     return (
-      <div ref={setNodeRef} style={style} className={`flex h-full w-14 shrink-0 flex-col rounded-xl ${KANBAN_GLASS_CARD_CLASS}`}>
+      <div ref={setNodeRef} style={style} className={`flex h-full w-14 shrink-0 flex-col rounded-xl ${GLASS_CARD_CLASS}`}>
         <div className="flex shrink-0 flex-col items-center gap-1 border-b border-border p-2">
           <button type="button" {...attributes} {...listeners} className="cursor-grab text-muted-foreground active:cursor-grabbing" aria-label="Drag column">
             <GripVertical className="size-4" />
@@ -498,7 +498,7 @@ function ColumnView({
   }
 
   return (
-    <div ref={setNodeRef} style={style} className={`flex h-full w-72 shrink-0 flex-col rounded-xl ${KANBAN_GLASS_CARD_CLASS}`}>
+    <div ref={setNodeRef} style={style} className={`flex h-full w-72 shrink-0 flex-col rounded-xl ${GLASS_CARD_CLASS}`}>
       <div className="flex shrink-0 items-center justify-between gap-2 border-b border-border p-3">
         <button type="button" {...attributes} {...listeners} className="cursor-grab text-muted-foreground active:cursor-grabbing" aria-label="Drag column">
           <GripVertical className="size-4" />
