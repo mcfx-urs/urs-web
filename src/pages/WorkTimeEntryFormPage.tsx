@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { GLASS_BACKGROUND_GRADIENT_CLASS } from '@/lib/glass-style'
 import {
   computeTotals,
   createWorkTimeEntry,
@@ -38,7 +39,7 @@ export default function WorkTimeEntryFormPage() {
 
   if (isEditing && isLoading) {
     return (
-      <div className="min-h-svh bg-background">
+      <div className={`min-h-svh bg-background ${GLASS_BACKGROUND_GRADIENT_CLASS}`}>
         <TopBar />
         <main className="mx-auto max-w-lg px-6 py-10">
           <p className="text-sm text-muted-foreground">Loading...</p>
@@ -48,7 +49,7 @@ export default function WorkTimeEntryFormPage() {
   }
   if (isEditing && !existing) {
     return (
-      <div className="min-h-svh bg-background">
+      <div className={`min-h-svh bg-background ${GLASS_BACKGROUND_GRADIENT_CLASS}`}>
         <TopBar />
         <main className="mx-auto max-w-lg px-6 py-10">
           <p className="text-sm text-muted-foreground">Entry not found.</p>
@@ -140,7 +141,7 @@ function EntryForm({ existing, userDefaultTargetHours }: { existing?: WorkTimeEn
       : null
 
   return (
-    <div className="min-h-svh bg-background">
+    <div className={`min-h-svh bg-background ${GLASS_BACKGROUND_GRADIENT_CLASS}`}>
       <TopBar />
       <main className="mx-auto max-w-lg px-6 py-10">
         <h1 className="mb-6 text-base font-bold">{isEditing ? 'Edit entry' : 'New entry'}</h1>
