@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { GLASS_BACKGROUND_GRADIENT_CLASS } from '@/lib/glass-style'
 import { createNote, fetchNotes, updateNote, type Note } from '@/lib/notes'
 import {
   continueListOnEnter,
@@ -37,7 +38,7 @@ export default function NoteFormPage() {
 
   if (isEditing && isLoading) {
     return (
-      <div className="min-h-svh bg-background">
+      <div className={`min-h-svh bg-background ${GLASS_BACKGROUND_GRADIENT_CLASS}`}>
         <TopBar />
         <main className="mx-auto max-w-2xl px-6 py-10">
           <p className="text-sm text-muted-foreground">Loading...</p>
@@ -47,7 +48,7 @@ export default function NoteFormPage() {
   }
   if (isEditing && !existing) {
     return (
-      <div className="min-h-svh bg-background">
+      <div className={`min-h-svh bg-background ${GLASS_BACKGROUND_GRADIENT_CLASS}`}>
         <TopBar />
         <main className="mx-auto max-w-2xl px-6 py-10">
           <p className="text-sm text-muted-foreground">Note not found.</p>
@@ -161,7 +162,7 @@ function NoteForm({ existing, allTags }: { existing?: Note; allTags: string[] })
   }
 
   return (
-    <div className="min-h-svh bg-background">
+    <div className={`min-h-svh bg-background ${GLASS_BACKGROUND_GRADIENT_CLASS}`}>
       <TopBar />
       <main className="mx-auto max-w-2xl px-6 py-10">
         <h1 className="mb-6 text-base font-bold">{isEditing ? 'Edit note' : 'New note'}</h1>
