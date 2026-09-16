@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import TopBar from '@/components/TopBar'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { deleteNote, fetchNotes, setNoteStatus, type NoteStatus } from '@/lib/notes'
+import { GLASS_BACKGROUND_GRADIENT_CLASS, GLASS_CARD_CLASS } from '@/lib/glass-style'
 
 // Matches urs-android's NotesHubScreen.formatReminder ("EEE, d MMM · HH:mm").
 // A "YYYY-MM-DDTHH:mm:ss" string (no offset) parses as local time per spec,
@@ -48,7 +49,7 @@ export default function NotesPage() {
   })
 
   return (
-    <div className="min-h-svh bg-background">
+    <div className={`min-h-svh bg-background ${GLASS_BACKGROUND_GRADIENT_CLASS}`}>
       <TopBar />
       <main className="mx-auto max-w-4xl px-6 py-10">
         <div className="mb-6 flex items-center justify-between">
@@ -94,7 +95,7 @@ export default function NotesPage() {
 
         <div className="flex flex-col gap-3">
           {filtered.map((note) => (
-            <div key={note.note_id} className="rounded-xl border border-border bg-card p-4">
+            <div key={note.note_id} className={`rounded-xl p-4 ${GLASS_CARD_CLASS}`}>
               <div className="flex items-start justify-between gap-3">
                 <Link to={`/notes/${note.note_id}`} className="flex-1">
                   <div className="text-sm font-bold">{note.note_title}</div>
