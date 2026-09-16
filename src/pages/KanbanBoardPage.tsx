@@ -1,4 +1,4 @@
-import { useMemo, useState, type FormEvent } from 'react'
+import { useEffect, useMemo, useState, type FormEvent } from 'react'
 import {
   DndContext,
   PointerSensor,
@@ -56,6 +56,13 @@ export default function KanbanBoardPage() {
   const [addingCardTo, setAddingCardTo] = useState<string | null>(null)
   const [newCardTitle, setNewCardTitle] = useState('')
   const [openCardId, setOpenCardId] = useState<string | null>(null)
+  // Brief self-dismissing confirmation after a card save (GitHub issue #15).
+  const [toast, setToast] = useState<string | null>(null)
+  useEffect(() => {
+    if (!toast) return
+    const timer = setTimeout(() => setToast(null), 2500)
+    return () => clearTimeout(timer)
+  }, [toast])
   // Per-viewer, per-board UI preference (GitHub issue #12) - not synced
   // across devices, so plain localStorage rather than a backend field.
   const [collapsedColumns, setCollapsedColumns] = useState<Set<string>>(() => {
@@ -249,11 +256,22 @@ export default function KanbanBoardPage() {
           card={openCard}
           onClose={() => setOpenCardId(null)}
           onSaved={invalidate}
+          onSaveSuccess={() => {
+            invalidate()
+            setOpenCardId(null)
+            setToast('Card saved')
+          }}
           onDeleted={() => {
             invalidate()
             setOpenCardId(null)
           }}
         />
+      )}
+
+      {toast && (
+        <div className="pointer-events-none fixed inset-x-0 bottom-6 z-50 flex justify-center">
+          <div className="rounded-full bg-foreground px-4 py-2 text-sm text-background shadow-lg">{toast}</div>
+        </div>
       )}
     </div>
   )
@@ -412,11 +430,13 @@ function KanbanCardDialog({
   card,
   onClose,
   onSaved,
+  onSaveSuccess,
   onDeleted,
 }: {
   card: KanbanCard
   onClose: () => void
   onSaved: () => void
+  onSaveSuccess: () => void
   onDeleted: () => void
 }) {
   const [title, setTitle] = useState(card.kanban_card_title)
@@ -427,6 +447,10 @@ function KanbanCardDialog({
   const [tags, setTags] = useState<string[]>(card.tags)
   const [tagInput, setTagInput] = useState('')
   const [checklistText, setChecklistText] = useState('')
+  // GitHub issue #15 - a failed save keeps the dialog open (so edits aren't
+  // lost) and surfaces this instead of failing silently; success closes the
+  // dialog and shows the toast in the parent (onSaveSuccess), not this.
+  const [saveError, setSaveError] = useState<string | null>(null)
 
   const { data: notes } = useQuery({ queryKey: ['notes', 'all'], queryFn: () => fetchNotes() })
 
@@ -442,7 +466,11 @@ function KanbanCardDialog({
       }
       return updateKanbanCard(card.kanban_card_id, input)
     },
-    onSuccess: onSaved,
+    onSuccess: () => {
+      setSaveError(null)
+      onSaveSuccess()
+    },
+    onError: () => setSaveError('Could not save the card.'),
   })
 
   const deleteMutation = useMutation({
@@ -616,9 +644,11 @@ function KanbanCardDialog({
             </div>
           </div>
 
+          {saveError && <p className="text-sm text-destructive">{saveError}</p>}
+
           <div className="flex gap-2">
             <Button type="submit" disabled={saveMutation.isPending}>
-              Save
+              {saveMutation.isPending ? 'Saving...' : 'Save'}
             </Button>
             <Button type="button" variant="outline" onClick={onClose}>
               Cancel

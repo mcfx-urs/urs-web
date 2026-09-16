@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Fixed
 
 - Fixed Kanban columns not filling the available screen height, so horizontal swipe/scroll works anywhere on screen and a long column scrolls internally instead of growing past it (#14)
+- Fixed saving a Kanban card giving no feedback; it now closes the dialog and shows a confirmation on success, and shows an error inline on failure instead of failing silently (#15)
 
 ## [1.1.0] - 2026-09-16
 
