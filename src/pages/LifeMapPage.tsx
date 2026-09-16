@@ -4,6 +4,7 @@ import { MapContainer, Polyline, TileLayer, useMap } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
 import TopBar from '@/components/TopBar'
 import { fetchLocationHistory, sinceDate, TIME_RANGES, type LifeMapPoint, type TimeRangeKey } from '@/lib/lifemap'
+import { GLASS_BACKGROUND_GRADIENT_CLASS } from '@/lib/glass-style'
 
 // Default life-map track gradient, oldest -> newest: cyan -> blue -> magenta.
 // Same default stops as urs-android's LocationHistorySettingsStore - chosen
@@ -65,7 +66,7 @@ export default function LifeMapPage() {
   }, [allPoints, rangeKey])
 
   return (
-    <div className="min-h-svh bg-background">
+    <div className={`min-h-svh bg-background ${GLASS_BACKGROUND_GRADIENT_CLASS}`}>
       <TopBar />
       <main className="mx-auto max-w-4xl px-6 py-10">
         <h1 className="mb-6 text-base font-bold">Life Map</h1>
