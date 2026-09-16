@@ -9,9 +9,10 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { createNote, fetchNotes, updateNote, type Note } from '@/lib/notes'
 import {
+  continueListOnEnter,
   indentCurrentLine,
   outdentCurrentLine,
-  prefixCurrentLine,
+  toggleListPrefix,
   wrapAsLink,
   wrapSelection,
   type MarkupEdit,
@@ -124,6 +125,20 @@ function NoteForm({ existing, allTags }: { existing?: Note; allTags: string[] })
     applyMarkupEdit(wrapAsLink(el, url))
   }
 
+  // GitHub issue #19 - continues/exits a list on Enter, mirroring
+  // urs-android's RichTextEditing.kt. Only intercepts the default newline
+  // when the cursor's current line is actually a list line; continueListOnEnter
+  // returns null otherwise, so a plain Enter elsewhere in the note is untouched.
+  function handleContentKeyDown(e: KeyboardEvent<HTMLTextAreaElement>) {
+    if (e.key !== 'Enter') return
+    const el = contentRef.current
+    if (!el) return
+    const edit = continueListOnEnter(el)
+    if (!edit) return
+    e.preventDefault()
+    applyMarkupEdit(edit)
+  }
+
   const mutation = useMutation({
     mutationFn: () => {
       const input = {
@@ -170,10 +185,10 @@ function NoteForm({ existing, allTags }: { existing?: Note; allTags: string[] })
               <Button type="button" variant="outline" size="icon-sm" onClick={handleLink} aria-label="Link">
                 <LinkIcon className="size-4" />
               </Button>
-              <Button type="button" variant="outline" size="icon-sm" onClick={() => withTextarea((el) => prefixCurrentLine(el, '- '))} aria-label="Bullet list">
+              <Button type="button" variant="outline" size="icon-sm" onClick={() => withTextarea((el) => toggleListPrefix(el, 'bullet'))} aria-label="Bullet list">
                 <List className="size-4" />
               </Button>
-              <Button type="button" variant="outline" size="icon-sm" onClick={() => withTextarea((el) => prefixCurrentLine(el, '1. '))} aria-label="Numbered list">
+              <Button type="button" variant="outline" size="icon-sm" onClick={() => withTextarea((el) => toggleListPrefix(el, 'number'))} aria-label="Numbered list">
                 <ListOrdered className="size-4" />
               </Button>
               <Button type="button" variant="outline" size="icon-sm" onClick={() => withTextarea(outdentCurrentLine)} aria-label="Outdent">
@@ -188,6 +203,7 @@ function NoteForm({ existing, allTags }: { existing?: Note; allTags: string[] })
               id="content"
               value={content}
               onChange={(e) => setContent(e.target.value)}
+              onKeyDown={handleContentKeyDown}
               rows={8}
             />
           </div>

@@ -23,6 +23,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Fixed dragging a Kanban card or column past its own position landing one slot further than intended
 - Fixed a dragged Kanban card getting visually clipped at its column's edge and fighting the board's own horizontal scroll, by rendering the dragged card/column in a floating overlay instead of moving it in place
 - Fixed a dropped Kanban card visibly flying back to its old column before jumping to the new one, by applying the move to a dedicated local state synchronously on drop instead of writing into the query cache (whose own change notifications are deferred a tick, too late for the drop animation to see)
+- Fixed the Notes bullet/numbered list toolbar buttons not toggling off an existing marker, and Enter inside a list not continuing (or exiting, on an empty item) the list on the new line (#19)
 
 ## [1.1.0] - 2026-09-16
 
