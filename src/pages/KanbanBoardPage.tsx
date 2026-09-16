@@ -151,10 +151,10 @@ export default function KanbanBoardPage() {
   }
 
   return (
-    <div className="min-h-svh bg-background">
+    <div className="flex h-svh flex-col bg-background">
       <TopBar />
-      <main className="px-6 py-10">
-        <div className="mx-auto mb-6 flex max-w-6xl items-center justify-between">
+      <main className="flex flex-1 flex-col overflow-hidden px-6 py-6">
+        <div className="mx-auto mb-4 flex w-full max-w-6xl shrink-0 items-center justify-between">
           <div>
             <button
               type="button"
@@ -168,7 +168,7 @@ export default function KanbanBoardPage() {
         </div>
 
         {error && (
-          <div className="mx-auto mb-4 flex max-w-6xl items-center justify-between rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">
+          <div className="mx-auto mb-4 flex w-full max-w-6xl shrink-0 items-center justify-between rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">
             {error}
             <button type="button" onClick={() => setError(null)} aria-label="Dismiss">
               <XIcon className="size-4" />
@@ -181,7 +181,7 @@ export default function KanbanBoardPage() {
         {!isLoading && (
           <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
             <SortableContext items={columns.map((c) => COL_PREFIX + c.kanban_column_id)} strategy={horizontalListSortingStrategy}>
-              <div className="flex gap-4 overflow-x-auto pb-4">
+              <div className="flex flex-1 gap-4 overflow-x-auto pb-4">
                 {columns.map((column) => (
                   <ColumnView
                     key={column.kanban_column_id}
@@ -261,8 +261,8 @@ function ColumnView({
   const style = { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.5 : 1 }
 
   return (
-    <div ref={setNodeRef} style={style} className="flex w-72 shrink-0 flex-col rounded-xl border border-border bg-card">
-      <div className="flex items-center justify-between gap-2 border-b border-border p-3">
+    <div ref={setNodeRef} style={style} className="flex h-full w-72 shrink-0 flex-col rounded-xl border border-border bg-card">
+      <div className="flex shrink-0 items-center justify-between gap-2 border-b border-border p-3">
         <button type="button" {...attributes} {...listeners} className="cursor-grab text-muted-foreground active:cursor-grabbing" aria-label="Drag column">
           <GripVertical className="size-4" />
         </button>
@@ -272,7 +272,7 @@ function ColumnView({
         </button>
       </div>
 
-      <div ref={setDroppableRef} className="flex min-h-16 flex-col gap-2 p-3">
+      <div ref={setDroppableRef} className="flex min-h-16 flex-1 flex-col gap-2 overflow-y-auto p-3">
         <SortableContext items={column.cards.map((c) => CARD_PREFIX + c.kanban_card_id)} strategy={verticalListSortingStrategy}>
           {column.cards.map((card) => (
             <CardView key={card.kanban_card_id} card={card} onClick={() => onCardClick(card.kanban_card_id)} />

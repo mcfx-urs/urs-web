@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Fixed
+
+- Fixed Kanban columns not filling the available screen height, so horizontal swipe/scroll works anywhere on screen and a long column scrolls internally instead of growing past it (#14)
+
 ## [1.1.0] - 2026-09-16
 
 ### Security
