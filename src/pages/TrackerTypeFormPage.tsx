@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { archiveTrackerType, createTrackerType, fetchTrackerTypes, updateTrackerType, type TrackerType } from '@/lib/chores'
+import { GLASS_BACKGROUND_GRADIENT_CLASS } from '@/lib/glass-style'
 
 // Not tied to any backend enum - tracker_type_color is an unvalidated
 // string, this palette is a urs-web-only choice.
@@ -25,7 +26,7 @@ export default function TrackerTypeFormPage() {
 
   if (isEditing && isLoading) {
     return (
-      <div className="min-h-svh bg-background">
+      <div className={`min-h-svh bg-background ${GLASS_BACKGROUND_GRADIENT_CLASS}`}>
         <TopBar />
         <main className="mx-auto max-w-lg px-6 py-10">
           <p className="text-sm text-muted-foreground">Loading...</p>
@@ -35,7 +36,7 @@ export default function TrackerTypeFormPage() {
   }
   if (isEditing && !existing) {
     return (
-      <div className="min-h-svh bg-background">
+      <div className={`min-h-svh bg-background ${GLASS_BACKGROUND_GRADIENT_CLASS}`}>
         <TopBar />
         <main className="mx-auto max-w-lg px-6 py-10">
           <p className="text-sm text-muted-foreground">Chore not found.</p>
@@ -95,7 +96,7 @@ function TrackerTypeForm({ existing }: { existing?: TrackerType }) {
   }
 
   return (
-    <div className="min-h-svh bg-background">
+    <div className={`min-h-svh bg-background ${GLASS_BACKGROUND_GRADIENT_CLASS}`}>
       <TopBar />
       <main className="mx-auto max-w-lg px-6 py-10">
         <h1 className="mb-6 text-base font-bold">{isEditing ? 'Edit chore' : 'New chore'}</h1>
