@@ -1,23 +1,14 @@
-import { useMemo, useRef, useState, type FormEvent, type KeyboardEvent } from 'react'
+import { useMemo, useState, type FormEvent, type KeyboardEvent } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Bold, Italic, LinkIcon, List, ListIndentDecrease, ListIndentIncrease, ListOrdered, Underline, XIcon } from 'lucide-react'
+import { XIcon } from 'lucide-react'
 import { useNavigate, useParams } from 'react-router-dom'
 import TopBar from '@/components/TopBar'
+import RichTextField from '@/components/richtext/RichTextField'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
 import { GLASS_BACKGROUND_GRADIENT_CLASS } from '@/lib/glass-style'
 import { createNote, fetchNotes, updateNote, type Note } from '@/lib/notes'
-import {
-  continueListOnEnter,
-  indentCurrentLine,
-  outdentCurrentLine,
-  toggleListPrefix,
-  wrapAsLink,
-  wrapSelection,
-  type MarkupEdit,
-} from '@/lib/textarea-markup'
 
 export default function NoteFormPage() {
   const { id } = useParams<{ id: string }>()
@@ -66,7 +57,6 @@ function NoteForm({ existing, allTags }: { existing?: Note; allTags: string[] })
   const isEditing = Boolean(existing)
   const navigate = useNavigate()
   const queryClient = useQueryClient()
-  const contentRef = useRef<HTMLTextAreaElement>(null)
 
   const [title, setTitle] = useState(existing?.note_title ?? '')
   const [content, setContent] = useState(existing?.note_content ?? '')
@@ -97,47 +87,6 @@ function NoteForm({ existing, allTags }: { existing?: Note; allTags: string[] })
       e.preventDefault()
       addTag(tagInput)
     }
-  }
-
-  // Applies a markup edit (from textarea-markup.ts) to state and restores
-  // focus/selection where the edit left it - matches urs-android's
-  // RichTextToolbar acting on the content field in place.
-  function applyMarkupEdit(edit: MarkupEdit) {
-    setContent(edit.value)
-    requestAnimationFrame(() => {
-      const el = contentRef.current
-      if (!el) return
-      el.focus()
-      el.setSelectionRange(edit.selectionStart, edit.selectionEnd)
-    })
-  }
-
-  function withTextarea(fn: (el: HTMLTextAreaElement) => MarkupEdit) {
-    const el = contentRef.current
-    if (!el) return
-    applyMarkupEdit(fn(el))
-  }
-
-  function handleLink() {
-    const el = contentRef.current
-    if (!el) return
-    const url = window.prompt('Link URL')
-    if (!url) return
-    applyMarkupEdit(wrapAsLink(el, url))
-  }
-
-  // GitHub issue #19 - continues/exits a list on Enter, mirroring
-  // urs-android's RichTextEditing.kt. Only intercepts the default newline
-  // when the cursor's current line is actually a list line; continueListOnEnter
-  // returns null otherwise, so a plain Enter elsewhere in the note is untouched.
-  function handleContentKeyDown(e: KeyboardEvent<HTMLTextAreaElement>) {
-    if (e.key !== 'Enter') return
-    const el = contentRef.current
-    if (!el) return
-    const edit = continueListOnEnter(el)
-    if (!edit) return
-    e.preventDefault()
-    applyMarkupEdit(edit)
   }
 
   const mutation = useMutation({
@@ -173,40 +122,7 @@ function NoteForm({ existing, allTags }: { existing?: Note; allTags: string[] })
           </div>
           <div className="flex flex-col gap-2">
             <Label htmlFor="content">Content</Label>
-            <div className="flex flex-wrap gap-1">
-              <Button type="button" variant="outline" size="icon-sm" onClick={() => withTextarea((el) => wrapSelection(el, '**'))} aria-label="Bold">
-                <Bold className="size-4" />
-              </Button>
-              <Button type="button" variant="outline" size="icon-sm" onClick={() => withTextarea((el) => wrapSelection(el, '~'))} aria-label="Italic">
-                <Italic className="size-4" />
-              </Button>
-              <Button type="button" variant="outline" size="icon-sm" onClick={() => withTextarea((el) => wrapSelection(el, '__'))} aria-label="Underline">
-                <Underline className="size-4" />
-              </Button>
-              <Button type="button" variant="outline" size="icon-sm" onClick={handleLink} aria-label="Link">
-                <LinkIcon className="size-4" />
-              </Button>
-              <Button type="button" variant="outline" size="icon-sm" onClick={() => withTextarea((el) => toggleListPrefix(el, 'bullet'))} aria-label="Bullet list">
-                <List className="size-4" />
-              </Button>
-              <Button type="button" variant="outline" size="icon-sm" onClick={() => withTextarea((el) => toggleListPrefix(el, 'number'))} aria-label="Numbered list">
-                <ListOrdered className="size-4" />
-              </Button>
-              <Button type="button" variant="outline" size="icon-sm" onClick={() => withTextarea(outdentCurrentLine)} aria-label="Outdent">
-                <ListIndentDecrease className="size-4" />
-              </Button>
-              <Button type="button" variant="outline" size="icon-sm" onClick={() => withTextarea(indentCurrentLine)} aria-label="Indent">
-                <ListIndentIncrease className="size-4" />
-              </Button>
-            </div>
-            <Textarea
-              ref={contentRef}
-              id="content"
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              onKeyDown={handleContentKeyDown}
-              rows={8}
-            />
+            <RichTextField id="content" value={content} onChange={setContent} />
           </div>
           <div className="flex flex-col gap-2">
             <Label htmlFor="tag-input">Tags</Label>
