@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { fetchCatalogProducts, type CatalogProduct } from '@/lib/catalog'
+import { GLASS_BACKGROUND_GRADIENT_CLASS, GLASS_CARD_CLASS } from '@/lib/glass-style'
 import {
   addShoppingListItem,
   deleteShoppingListItem,
@@ -81,7 +82,7 @@ export default function ShoppingListDetailPage() {
   })
 
   return (
-    <div className="min-h-svh bg-background">
+    <div className={`min-h-svh bg-background ${GLASS_BACKGROUND_GRADIENT_CLASS}`}>
       <TopBar />
       <main className="mx-auto max-w-3xl px-6 py-10">
         <div className="mb-6 flex items-center justify-between">
@@ -109,7 +110,7 @@ export default function ShoppingListDetailPage() {
                 {categoryItems.map((item) => (
                   <div
                     key={item.list_item_id}
-                    className="flex items-center gap-3 rounded-xl border border-border bg-card p-3"
+                    className={`flex items-center gap-3 rounded-xl p-3 ${GLASS_CARD_CLASS}`}
                   >
                     <div className="flex-1">
                       <div className="text-sm font-bold" style={item.list_item_on_sale ? { color: '#E0813F' } : undefined}>
@@ -151,7 +152,7 @@ export default function ShoppingListDetailPage() {
                   key={r.catalog_product_id}
                   type="button"
                   onClick={() => addMutation.mutate(r.catalog_product_id)}
-                  className="rounded-full border border-border bg-card px-3 py-1.5 text-xs hover:bg-accent"
+                  className={`rounded-full px-3 py-1.5 text-xs hover:bg-accent ${GLASS_CARD_CLASS}`}
                 >
                   + {catalogById.get(r.catalog_product_id)?.catalog_product_name ?? 'Product'}
                 </button>
