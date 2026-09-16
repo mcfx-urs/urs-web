@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { apiFetch } from '@/lib/api'
+import { GLASS_BACKGROUND_GRADIENT_CLASS, GLASS_CARD_CLASS } from '@/lib/glass-style'
 
 type Status = { kind: 'idle' } | { kind: 'success'; message: string } | { kind: 'error'; message: string }
 
@@ -39,11 +40,11 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="min-h-svh bg-background">
+    <div className={`min-h-svh bg-background ${GLASS_BACKGROUND_GRADIENT_CLASS}`}>
       <TopBar />
       <main className="mx-auto max-w-6xl px-6 py-10">
         <h1 className="mb-6 text-base font-bold">Admin</h1>
-        <Card className="w-full max-w-sm">
+        <Card className={`w-full max-w-sm ring-0 ${GLASS_CARD_CLASS}`}>
           <CardHeader>
             <CardTitle>Deploy</CardTitle>
           </CardHeader>
