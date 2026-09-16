@@ -166,27 +166,25 @@ export async function clearMonthOverride(year: number, month: number): Promise<v
   if (!res.ok) throw new Error(`clear month override failed (${res.status})`)
 }
 
-// Filtered down to the caller's own user_id here, same approach
-// lib/users.ts's fetchHouseholdUsers already uses to narrow this
-// endpoint's response for ShareSheet. Only the caller's own work
-// settings are ever read into state or rendered.
+// getuser is scoped server-side to the caller's own row (a single object,
+// not a list) - see lib/users.ts's fetchHouseholdUsers for the all-users,
+// name-only projection used elsewhere.
 export async function fetchWorkSettings(): Promise<WorkSettings> {
-  const userId = currentUserId()
   const res = await apiFetch('/api/v1/getuser')
-  const users = await jsonOrEmpty<Record<string, string>>(res, 'load work settings')
-  const me = users.find((u) => u.user_id === userId)
+  if (!res.ok) throw new Error(`load work settings failed (${res.status})`)
+  const me: Record<string, string> = await res.json()
   return {
-    default_daily_target_hours: me?.user_default_daily_target_hours ?? '',
-    employment_percent: me?.user_employment_percent ?? '',
-    hourly_wage: me?.user_hourly_wage ?? '',
+    default_daily_target_hours: me.user_default_daily_target_hours ?? '',
+    employment_percent: me.user_employment_percent ?? '',
+    hourly_wage: me.user_hourly_wage ?? '',
     wageRules: withWageRuleDefaults({
-      vacation_pay_surcharge_percent: me?.user_vacation_pay_surcharge_percent ?? '',
-      holiday_surcharge_percent: me?.user_holiday_surcharge_percent ?? '',
-      thirteenth_month_surcharge_percent: me?.user_thirteenth_month_surcharge_percent ?? '',
-      ahv_iv_eo_deduction_percent: me?.user_ahv_iv_eo_deduction_percent ?? '',
-      alv_deduction_percent: me?.user_alv_deduction_percent ?? '',
-      suva_nbu_deduction_percent: me?.user_suva_nbu_deduction_percent ?? '',
-      ktg_deduction_percent: me?.user_ktg_deduction_percent ?? '',
+      vacation_pay_surcharge_percent: me.user_vacation_pay_surcharge_percent ?? '',
+      holiday_surcharge_percent: me.user_holiday_surcharge_percent ?? '',
+      thirteenth_month_surcharge_percent: me.user_thirteenth_month_surcharge_percent ?? '',
+      ahv_iv_eo_deduction_percent: me.user_ahv_iv_eo_deduction_percent ?? '',
+      alv_deduction_percent: me.user_alv_deduction_percent ?? '',
+      suva_nbu_deduction_percent: me.user_suva_nbu_deduction_percent ?? '',
+      ktg_deduction_percent: me.user_ktg_deduction_percent ?? '',
     }),
   }
 }

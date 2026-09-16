@@ -9,11 +9,11 @@ export type HouseholdUser = {
   user_lastname: string
 }
 
-// Only a subset of this endpoint's response fields is used here -
-// deliberately picking user_id/user_name/first/last name, never storing
-// or passing along anything else.
+// household-users is the deliberately narrow, name-only projection for
+// this picker use case - unlike getuser (see fetchWorkSettings), it never
+// returns anyone's wage/tax fields to begin with.
 export async function fetchHouseholdUsers(): Promise<HouseholdUser[]> {
-  const res = await apiFetch('/api/v1/getuser')
+  const res = await apiFetch('/api/v1/household-users')
   if (!res.ok) throw new Error(`load users failed (${res.status})`)
   const users: HouseholdUser[] = await res.json()
   return users.map((u) => ({
