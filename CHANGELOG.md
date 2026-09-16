@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- Added a collapse toggle to Kanban columns, showing just the name and card count in a narrow strip; state is remembered per board in the browser (#12)
+
 ### Fixed
 
 - Fixed Kanban columns not filling the available screen height, so horizontal swipe/scroll works anywhere on screen and a long column scrolls internally instead of growing past it (#14)

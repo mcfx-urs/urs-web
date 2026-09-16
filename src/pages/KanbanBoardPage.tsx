@@ -10,7 +10,7 @@ import {
 import { SortableContext, horizontalListSortingStrategy, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { GripVertical, Plus, Trash2, X as XIcon } from 'lucide-react'
+import { GripVertical, Maximize2, Minimize2, Plus, Trash2, X as XIcon } from 'lucide-react'
 import { useNavigate, useParams } from 'react-router-dom'
 import TopBar from '@/components/TopBar'
 import { Button } from '@/components/ui/button'
@@ -56,6 +56,30 @@ export default function KanbanBoardPage() {
   const [addingCardTo, setAddingCardTo] = useState<string | null>(null)
   const [newCardTitle, setNewCardTitle] = useState('')
   const [openCardId, setOpenCardId] = useState<string | null>(null)
+  // Per-viewer, per-board UI preference (GitHub issue #12) - not synced
+  // across devices, so plain localStorage rather than a backend field.
+  const [collapsedColumns, setCollapsedColumns] = useState<Set<string>>(() => {
+    try {
+      const raw = localStorage.getItem(`kanban-collapsed:${boardId}`)
+      return new Set(raw ? (JSON.parse(raw) as string[]) : [])
+    } catch {
+      return new Set()
+    }
+  })
+
+  function toggleColumnCollapsed(columnId: string) {
+    setCollapsedColumns((prev) => {
+      const next = new Set(prev)
+      if (next.has(columnId)) next.delete(columnId)
+      else next.add(columnId)
+      try {
+        localStorage.setItem(`kanban-collapsed:${boardId}`, JSON.stringify([...next]))
+      } catch {
+        // Private browsing / quota - collapse state just won't persist.
+      }
+      return next
+    })
+  }
 
   const { data: board, isLoading } = useQuery({
     queryKey: ['kanban-board', boardId],
@@ -199,6 +223,8 @@ export default function KanbanBoardPage() {
                     onSubmitAddCard={() => {
                       if (newCardTitle.trim()) createCardMutation.mutate({ columnId: column.kanban_column_id, title: newCardTitle.trim() })
                     }}
+                    collapsed={collapsedColumns.has(column.kanban_column_id)}
+                    onToggleCollapsed={() => toggleColumnCollapsed(column.kanban_column_id)}
                   />
                 ))}
 
@@ -243,6 +269,8 @@ function ColumnView({
   onStartAddCard,
   onCancelAddCard,
   onSubmitAddCard,
+  collapsed,
+  onToggleCollapsed,
 }: {
   column: KanbanColumn
   onDelete: () => void
@@ -253,12 +281,38 @@ function ColumnView({
   onStartAddCard: () => void
   onCancelAddCard: () => void
   onSubmitAddCard: () => void
+  collapsed: boolean
+  onToggleCollapsed: () => void
 }) {
   const dndId = COL_PREFIX + column.kanban_column_id
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: dndId })
   const { setNodeRef: setDroppableRef } = useDroppable({ id: dndId })
 
   const style = { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.5 : 1 }
+
+  // Collapsed: name+count only, in a narrow strip - the card list itself is
+  // hidden, but the column stays a valid drop target (still renders the
+  // droppable ref) so a card can be dropped here without expanding first.
+  if (collapsed) {
+    return (
+      <div ref={setNodeRef} style={style} className="flex h-full w-14 shrink-0 flex-col rounded-xl border border-border bg-card">
+        <div className="flex shrink-0 flex-col items-center gap-1 border-b border-border p-2">
+          <button type="button" {...attributes} {...listeners} className="cursor-grab text-muted-foreground active:cursor-grabbing" aria-label="Drag column">
+            <GripVertical className="size-4" />
+          </button>
+          <button type="button" onClick={onToggleCollapsed} className="text-muted-foreground hover:text-foreground" aria-label="Expand column">
+            <Maximize2 className="size-4" />
+          </button>
+        </div>
+        <div ref={setDroppableRef} className="flex flex-1 flex-col items-center justify-between gap-2 overflow-hidden py-2">
+          {column.cards.length > 0 && (
+            <span className="rounded-full bg-muted px-1.5 py-0.5 text-[10px] text-muted-foreground">{column.cards.length}</span>
+          )}
+          <span className="flex-1 truncate text-sm font-bold [writing-mode:vertical-rl]">{column.kanban_column_name}</span>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div ref={setNodeRef} style={style} className="flex h-full w-72 shrink-0 flex-col rounded-xl border border-border bg-card">
@@ -267,6 +321,9 @@ function ColumnView({
           <GripVertical className="size-4" />
         </button>
         <span className="flex-1 truncate text-sm font-bold">{column.kanban_column_name}</span>
+        <button type="button" onClick={onToggleCollapsed} className="text-muted-foreground hover:text-foreground" aria-label="Collapse column">
+          <Minimize2 className="size-4" />
+        </button>
         <button type="button" onClick={onDelete} className="text-muted-foreground hover:text-destructive" aria-label="Delete column">
           <Trash2 className="size-4" />
         </button>
