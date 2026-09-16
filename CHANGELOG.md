@@ -9,6 +9,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Added
 
 - Added a collapse toggle to Kanban columns, showing just the name and card count in a narrow strip; state is remembered per board in the browser (#12)
+- Added proactive access-token refresh, scheduled shortly before expiry and backstopped on tab focus, instead of only refreshing on mount and after a request already got a 401 (#18)
+- Added a global error toast so a failed request surfaces to the user instead of failing silently (#18)
 
 ### Changed
 

@@ -30,6 +30,40 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     refresh().finally(() => setReady(true))
   }, [])
 
+  // Proactive refresh (GitHub issue #18) - previously only refreshed once
+  // on mount and reactively after a request already got a 401. Reruns
+  // whenever `token` changes, including right after refresh() itself sets
+  // a new one, so this keeps rescheduling itself for as long as the
+  // session stays alive. The setTimeout alone isn't enough on its own -
+  // background tabs get throttled/suspended by the browser, so a timer set
+  // for 30s before expiry can fire minutes late (or not at all before the
+  // tab regains focus) - the visibilitychange listener is the backstop for
+  // exactly that case, refreshing immediately on return to the tab if the
+  // token turned out to already be at or past its buffer.
+  useEffect(() => {
+    if (!token) return
+    const claims = decodeAccessTokenClaims(token)
+    if (!claims) return
+
+    const REFRESH_BUFFER_MS = 30_000
+    const expiresAtMs = claims.exp * 1000
+    const timer = setTimeout(() => {
+      refresh()
+    }, Math.max(expiresAtMs - Date.now() - REFRESH_BUFFER_MS, 0))
+
+    function handleVisibilityChange() {
+      if (document.visibilityState === 'visible' && expiresAtMs - Date.now() <= REFRESH_BUFFER_MS) {
+        refresh()
+      }
+    }
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+
+    return () => {
+      clearTimeout(timer)
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+    }
+  }, [token])
+
   const isSuperUser = useMemo(() => (token ? (decodeAccessTokenClaims(token)?.is_super_user ?? false) : false), [token])
 
   async function login(userName: string, password: string) {
