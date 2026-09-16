@@ -6,6 +6,7 @@ import { Button, buttonVariants } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { GLASS_BACKGROUND_GRADIENT_CLASS, GLASS_CARD_CLASS } from '@/lib/glass-style'
 import {
   clearMonthOverride,
   computeMonthlySummary,
@@ -111,7 +112,7 @@ export default function WorkTimePage() {
   }
 
   return (
-    <div className="min-h-svh bg-background">
+    <div className={`min-h-svh bg-background ${GLASS_BACKGROUND_GRADIENT_CLASS}`}>
       <TopBar />
       <main className="mx-auto max-w-4xl px-6 py-10">
         <div className="mb-6 flex items-center justify-between">
@@ -165,7 +166,7 @@ export default function WorkTimePage() {
             const overUnder = parseFloat(entry.over_undertime_hours)
             const hasOverUnder = !Number.isNaN(overUnder)
             return (
-              <div key={entry.work_time_entry_id} className="rounded-xl border border-border bg-card p-4">
+              <div key={entry.work_time_entry_id} className={`rounded-xl p-4 ${GLASS_CARD_CLASS}`}>
                 <div className="flex items-center justify-between gap-3">
                   <span className="text-sm font-bold">{entry.work_time_entry_date}</span>
                   <div className="flex items-center gap-2">
@@ -261,7 +262,7 @@ function StatTile({
       type="button"
       onClick={onClick}
       disabled={!onClick}
-      className={`flex flex-col gap-1 rounded-xl border border-border bg-card p-3 text-left ${onClick ? 'hover:border-primary' : ''}`}
+      className={`flex flex-col gap-1 rounded-xl p-3 text-left ${onClick ? 'hover:border-primary' : ''} ${GLASS_CARD_CLASS}`}
     >
       <span className="text-xs text-muted-foreground">{label}</span>
       <span className={`text-base font-bold ${negative ? 'text-destructive' : ''}`}>{value}</span>
@@ -275,7 +276,7 @@ function EarningsTile({ breakdown, onClick }: { breakdown: WageBreakdown | null;
       type="button"
       onClick={onClick}
       disabled={!breakdown}
-      className={`flex flex-col gap-1 rounded-xl border border-border bg-card p-3 text-left ${breakdown ? 'hover:border-primary' : ''}`}
+      className={`flex flex-col gap-1 rounded-xl p-3 text-left ${breakdown ? 'hover:border-primary' : ''} ${GLASS_CARD_CLASS}`}
     >
       <span className="text-xs text-muted-foreground">Earnings</span>
       <div className="flex items-baseline justify-between">
