@@ -16,6 +16,7 @@ import {
   type TrackerType,
 } from '@/lib/chores'
 import { formatDateISO, monthGrid, parseDateISO } from '@/lib/date-utils'
+import { GLASS_BACKGROUND_GRADIENT_CLASS, GLASS_CARD_CLASS } from '@/lib/glass-style'
 
 function lastDoneOn(type: TrackerType, events: TrackerEvent[]): string | null {
   const last = events
@@ -81,7 +82,7 @@ export default function ChoresPage() {
   const todayIso = formatDateISO(new Date())
 
   return (
-    <div className="min-h-svh bg-background">
+    <div className={`min-h-svh bg-background ${GLASS_BACKGROUND_GRADIENT_CLASS}`}>
       <TopBar />
       <main className="mx-auto max-w-4xl px-6 py-10">
         <div className="mb-6 flex items-center justify-between">
@@ -91,7 +92,7 @@ export default function ChoresPage() {
           </Link>
         </div>
 
-        <div className="mb-8 rounded-xl border border-border bg-card p-4">
+        <div className={`mb-8 rounded-xl p-4 ${GLASS_CARD_CLASS}`}>
           <div className="mb-4 flex items-center justify-between">
             <Button
               variant="outline"
@@ -162,7 +163,7 @@ export default function ChoresPage() {
             return (
             <div
               key={type.tracker_type_id}
-              className="flex items-center gap-3 rounded-xl border border-border bg-card p-4"
+              className={`flex items-center gap-3 rounded-xl p-4 ${GLASS_CARD_CLASS}`}
             >
               <span className="text-2xl" aria-hidden>
                 {type.tracker_type_icon}
