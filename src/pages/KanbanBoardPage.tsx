@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type FormEvent } from 'react'
+import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
 import {
   DndContext,
   PointerSensor,
@@ -10,7 +10,22 @@ import {
 import { SortableContext, horizontalListSortingStrategy, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { GripVertical, Maximize2, Minimize2, Plus, Trash2, X as XIcon } from 'lucide-react'
+import {
+  Bold,
+  GripVertical,
+  Italic,
+  Link as LinkIcon,
+  List,
+  ListIndentDecrease,
+  ListIndentIncrease,
+  ListOrdered,
+  Maximize2,
+  Minimize2,
+  Plus,
+  Trash2,
+  Underline,
+  X as XIcon,
+} from 'lucide-react'
 import { useNavigate, useParams } from 'react-router-dom'
 import TopBar from '@/components/TopBar'
 import { Button } from '@/components/ui/button'
@@ -36,6 +51,14 @@ import {
   type KanbanPriority,
 } from '@/lib/kanban'
 import { fetchNotes } from '@/lib/notes'
+import {
+  indentCurrentLine,
+  outdentCurrentLine,
+  prefixCurrentLine,
+  wrapAsLink,
+  wrapSelection,
+  type MarkupEdit,
+} from '@/lib/textarea-markup'
 
 const COL_PREFIX = 'col:'
 const CARD_PREFIX = 'card:'
@@ -451,8 +474,36 @@ function KanbanCardDialog({
   // lost) and surfaces this instead of failing silently; success closes the
   // dialog and shows the toast in the parent (onSaveSuccess), not this.
   const [saveError, setSaveError] = useState<string | null>(null)
+  const descriptionRef = useRef<HTMLTextAreaElement>(null)
 
   const { data: notes } = useQuery({ queryKey: ['notes', 'all'], queryFn: () => fetchNotes() })
+
+  // Same markup toolbar as NoteFormPage.tsx (GitHub issue #16) - operates on
+  // the raw **/~/__/[]() syntax in place, cross-compatible with what
+  // urs-android's own rich-text editor reads/writes.
+  function applyMarkupEdit(edit: MarkupEdit) {
+    setDescription(edit.value)
+    requestAnimationFrame(() => {
+      const el = descriptionRef.current
+      if (!el) return
+      el.focus()
+      el.setSelectionRange(edit.selectionStart, edit.selectionEnd)
+    })
+  }
+
+  function withDescriptionTextarea(fn: (el: HTMLTextAreaElement) => MarkupEdit) {
+    const el = descriptionRef.current
+    if (!el) return
+    applyMarkupEdit(fn(el))
+  }
+
+  function handleDescriptionLink() {
+    const el = descriptionRef.current
+    if (!el) return
+    const url = window.prompt('Link URL')
+    if (!url) return
+    applyMarkupEdit(wrapAsLink(el, url))
+  }
 
   const saveMutation = useMutation({
     mutationFn: () => {
@@ -522,7 +573,39 @@ function KanbanCardDialog({
 
           <div className="flex flex-col gap-2">
             <Label htmlFor="card-description">Description</Label>
-            <Textarea id="card-description" value={description} onChange={(e) => setDescription(e.target.value)} rows={3} />
+            <div className="flex flex-wrap gap-1">
+              <Button type="button" variant="outline" size="icon-sm" onClick={() => withDescriptionTextarea((el) => wrapSelection(el, '**'))} aria-label="Bold">
+                <Bold className="size-4" />
+              </Button>
+              <Button type="button" variant="outline" size="icon-sm" onClick={() => withDescriptionTextarea((el) => wrapSelection(el, '~'))} aria-label="Italic">
+                <Italic className="size-4" />
+              </Button>
+              <Button type="button" variant="outline" size="icon-sm" onClick={() => withDescriptionTextarea((el) => wrapSelection(el, '__'))} aria-label="Underline">
+                <Underline className="size-4" />
+              </Button>
+              <Button type="button" variant="outline" size="icon-sm" onClick={handleDescriptionLink} aria-label="Link">
+                <LinkIcon className="size-4" />
+              </Button>
+              <Button type="button" variant="outline" size="icon-sm" onClick={() => withDescriptionTextarea((el) => prefixCurrentLine(el, '- '))} aria-label="Bullet list">
+                <List className="size-4" />
+              </Button>
+              <Button type="button" variant="outline" size="icon-sm" onClick={() => withDescriptionTextarea((el) => prefixCurrentLine(el, '1. '))} aria-label="Numbered list">
+                <ListOrdered className="size-4" />
+              </Button>
+              <Button type="button" variant="outline" size="icon-sm" onClick={() => withDescriptionTextarea(outdentCurrentLine)} aria-label="Outdent">
+                <ListIndentDecrease className="size-4" />
+              </Button>
+              <Button type="button" variant="outline" size="icon-sm" onClick={() => withDescriptionTextarea(indentCurrentLine)} aria-label="Indent">
+                <ListIndentIncrease className="size-4" />
+              </Button>
+            </div>
+            <Textarea
+              ref={descriptionRef}
+              id="card-description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              rows={3}
+            />
           </div>
 
           <div className="flex gap-3">
