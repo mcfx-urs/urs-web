@@ -15,6 +15,7 @@ import {
   renameShoppingList,
 } from '@/lib/shopping-list'
 import { currentUserId } from '@/lib/users'
+import { GLASS_BACKGROUND_GRADIENT_CLASS, GLASS_CARD_CLASS } from '@/lib/glass-style'
 
 export default function ShoppingListsPage() {
   const queryClient = useQueryClient()
@@ -59,7 +60,7 @@ export default function ShoppingListsPage() {
   }
 
   return (
-    <div className="min-h-svh bg-background">
+    <div className={`min-h-svh bg-background ${GLASS_BACKGROUND_GRADIENT_CLASS}`}>
       <TopBar />
       <main className="mx-auto max-w-3xl px-6 py-10">
         <h1 className="mb-6 text-base font-bold">Shopping lists</h1>
@@ -76,7 +77,7 @@ export default function ShoppingListsPage() {
 
         <div className="flex flex-col gap-3">
           {lists?.map((list) => (
-            <div key={list.list_id} className="rounded-xl border border-border bg-card p-4">
+            <div key={list.list_id} className={`rounded-xl p-4 ${GLASS_CARD_CLASS}`}>
               <div className="flex items-center justify-between gap-3">
                 {renamingId === list.list_id ? (
                   <form
