@@ -7,6 +7,7 @@ import {
   KanbanIcon,
   NotesIcon,
   PinIcon,
+  ServiceIcon,
   ShoppingListIcon,
   VehicleIcon,
 } from '@/components/icons'
@@ -27,6 +28,7 @@ const FEATURES = [
   { name: 'Work Time', icon: ClockIcon, href: '/worktime' },
   { name: 'Beer log', icon: BeerIcon, href: '/beer' },
   { name: 'Vehicles', icon: VehicleIcon, href: '/vehicles' },
+  { name: 'Vehicle Service', icon: ServiceIcon, href: '/service' },
   { name: 'Settings', icon: GearIcon, href: '/settings' },
 ]
 

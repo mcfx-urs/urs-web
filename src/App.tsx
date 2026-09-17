@@ -13,6 +13,8 @@ import LoginPage from '@/pages/LoginPage'
 import NoteFormPage from '@/pages/NoteFormPage'
 import NotesPage from '@/pages/NotesPage'
 import SettingsPage from '@/pages/SettingsPage'
+import ServiceFormPage from '@/pages/ServiceFormPage'
+import ServicePage from '@/pages/ServicePage'
 import ShoppingListDetailPage from '@/pages/ShoppingListDetailPage'
 import ShoppingListsPage from '@/pages/ShoppingListsPage'
 import VehicleFormPage from '@/pages/VehicleFormPage'
@@ -62,6 +64,9 @@ function App() {
       <Route path="/vehicles" element={<VehiclesPage />} />
       <Route path="/vehicles/new" element={<VehicleFormPage />} />
       <Route path="/vehicles/:id" element={<VehicleFormPage />} />
+      <Route path="/service" element={<ServicePage />} />
+      <Route path="/service/new" element={<ServiceFormPage />} />
+      <Route path="/service/:id" element={<ServiceFormPage />} />
       <Route path="/admin" element={isSuperUser ? <AdminPage /> : <Navigate to="/" replace />} />
     </Routes>
   )

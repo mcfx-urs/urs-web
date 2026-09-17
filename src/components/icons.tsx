@@ -102,6 +102,14 @@ export function KanbanIcon({ className }: IconProps) {
   )
 }
 
+export function ServiceIcon({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M14.7 6.3a4 4 0 0 1-5.4 5.4L4 17l3 3 5.3-5.3a4 4 0 0 1 5.4-5.4l-2.3 2.3-2-2Z" />
+    </svg>
+  )
+}
+
 export function VehicleIcon({ className }: IconProps) {
   return (
     <svg {...base} className={className}>
