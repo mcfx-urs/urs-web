@@ -6,6 +6,13 @@ import BakingHubPage from '@/pages/BakingHubPage'
 import BakingPlanDetailPage from '@/pages/BakingPlanDetailPage'
 import BeerPage from '@/pages/BeerPage'
 import ChoresPage from '@/pages/ChoresPage'
+import FuelFillFormPage from '@/pages/FuelFillFormPage'
+import FuelFillsPage from '@/pages/FuelFillsPage'
+import FuelHubPage from '@/pages/FuelHubPage'
+import FuelPriceFormPage from '@/pages/FuelPriceFormPage'
+import FuelStationMapPage from '@/pages/FuelStationMapPage'
+import FuelStationsPage from '@/pages/FuelStationsPage'
+import FuelStatsPage from '@/pages/FuelStatsPage'
 import InventoriesPage from '@/pages/InventoriesPage'
 import InventoryDetailPage from '@/pages/InventoryDetailPage'
 import KanbanBoardPage from '@/pages/KanbanBoardPage'
@@ -63,6 +70,14 @@ function App() {
       <Route path="/worktime/new" element={<WorkTimeEntryFormPage />} />
       <Route path="/worktime/:id" element={<WorkTimeEntryFormPage />} />
       <Route path="/beer" element={<BeerPage />} />
+      <Route path="/fuel" element={<FuelHubPage />} />
+      <Route path="/fuel/fills" element={<FuelFillsPage />} />
+      <Route path="/fuel/add" element={<FuelFillFormPage />} />
+      <Route path="/fuel/add/:id" element={<FuelFillFormPage />} />
+      <Route path="/fuel/stations" element={<FuelStationsPage />} />
+      <Route path="/fuel/stations/map" element={<FuelStationMapPage />} />
+      <Route path="/fuel/stats" element={<FuelStatsPage />} />
+      <Route path="/fuel/price" element={<FuelPriceFormPage />} />
       <Route path="/baking" element={<BakingHubPage />} />
       <Route path="/baking/history" element={<BakingHistoryPage />} />
       <Route path="/baking/:id" element={<BakingPlanDetailPage />} />
