@@ -11,6 +11,7 @@ import LifeMapPage from '@/pages/LifeMapPage'
 import LoginPage from '@/pages/LoginPage'
 import NoteFormPage from '@/pages/NoteFormPage'
 import NotesPage from '@/pages/NotesPage'
+import SettingsPage from '@/pages/SettingsPage'
 import ShoppingListDetailPage from '@/pages/ShoppingListDetailPage'
 import ShoppingListsPage from '@/pages/ShoppingListsPage'
 import TrackerTypeFormPage from '@/pages/TrackerTypeFormPage'
@@ -53,6 +54,7 @@ function App() {
       <Route path="/worktime/settings" element={<WorkTimeSettingsPage />} />
       <Route path="/worktime/new" element={<WorkTimeEntryFormPage />} />
       <Route path="/worktime/:id" element={<WorkTimeEntryFormPage />} />
+      <Route path="/settings" element={<SettingsPage />} />
       <Route path="/admin" element={isSuperUser ? <AdminPage /> : <Navigate to="/" replace />} />
     </Routes>
   )

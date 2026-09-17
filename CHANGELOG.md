@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- Added a Settings page for profile fields, change password, and default vehicle (#23)
+
 ## [1.2.0] - 2026-09-17
 
 ### Added

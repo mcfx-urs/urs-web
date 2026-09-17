@@ -1,4 +1,4 @@
-import { ChoresIcon, ClockIcon, InventoryIcon, KanbanIcon, NotesIcon, PinIcon, ShoppingListIcon } from '@/components/icons'
+import { ChoresIcon, ClockIcon, GearIcon, InventoryIcon, KanbanIcon, NotesIcon, PinIcon, ShoppingListIcon } from '@/components/icons'
 import TopBar from '@/components/TopBar'
 import FeatureTile from '@/components/FeatureTile'
 import { GLASS_BACKGROUND_GRADIENT_CLASS } from '@/lib/glass-style'
@@ -14,6 +14,7 @@ const FEATURES = [
   { name: 'Kanban', icon: KanbanIcon, href: '/kanban' },
   { name: 'Life Map', icon: PinIcon, href: '/life-map' },
   { name: 'Work Time', icon: ClockIcon, href: '/worktime' },
+  { name: 'Settings', icon: GearIcon, href: '/settings' },
 ]
 
 export default function LandingPage() {
