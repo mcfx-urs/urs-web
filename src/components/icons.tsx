@@ -102,6 +102,15 @@ export function KanbanIcon({ className }: IconProps) {
   )
 }
 
+export function BakingIcon({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M6 11c0-3 2.5-6 6-6s6 3 6 6" />
+      <path d="M4 11h16l-1.5 8a2 2 0 0 1-2 1.7H7.5a2 2 0 0 1-2-1.7L4 11Z" />
+    </svg>
+  )
+}
+
 export function ServiceIcon({ className }: IconProps) {
   return (
     <svg {...base} className={className}>

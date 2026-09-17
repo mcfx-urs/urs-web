@@ -23,6 +23,15 @@ export function formatDateTimeLocal(date: Date): string {
   return `${formatDateISO(date)} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`
 }
 
+// Inverse of formatDateTimeLocal - parses "yyyy-MM-dd HH:mm:ss" as local wall-
+// clock components, never through the UTC-parsing ISO Date constructor.
+export function parseDateTimeLocal(raw: string): Date {
+  const [datePart, timePart] = raw.split(' ')
+  const [y, m, d] = datePart.split('-').map(Number)
+  const [h, min, s] = (timePart ?? '00:00:00').split(':').map(Number)
+  return new Date(y, m - 1, d, h, min, s ?? 0)
+}
+
 // Monday-first grid: leading `null`s pad out to the month's first weekday.
 export function monthGrid(year: number, month: number): (Date | null)[] {
   const first = new Date(year, month, 1)

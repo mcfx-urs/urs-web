@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- Added a Baking page: sourdough step plan, snooze, history, foreground reminders (#24)
 - Added a Vehicle Service page: maintenance log with category tags and custom tags (#25)
 - Added a Beer log page: quick-log buttons, history, daily/monthly charts, yearly summary (#22)
 - Added vehicle management: create, edit, delete, with an MFK-due badge (#27)

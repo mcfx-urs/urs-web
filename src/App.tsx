@@ -1,6 +1,9 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { useAuth } from '@/auth/AuthContext'
 import AdminPage from '@/pages/AdminPage'
+import BakingHistoryPage from '@/pages/BakingHistoryPage'
+import BakingHubPage from '@/pages/BakingHubPage'
+import BakingPlanDetailPage from '@/pages/BakingPlanDetailPage'
 import BeerPage from '@/pages/BeerPage'
 import ChoresPage from '@/pages/ChoresPage'
 import InventoriesPage from '@/pages/InventoriesPage'
@@ -60,6 +63,9 @@ function App() {
       <Route path="/worktime/new" element={<WorkTimeEntryFormPage />} />
       <Route path="/worktime/:id" element={<WorkTimeEntryFormPage />} />
       <Route path="/beer" element={<BeerPage />} />
+      <Route path="/baking" element={<BakingHubPage />} />
+      <Route path="/baking/history" element={<BakingHistoryPage />} />
+      <Route path="/baking/:id" element={<BakingPlanDetailPage />} />
       <Route path="/settings" element={<SettingsPage />} />
       <Route path="/vehicles" element={<VehiclesPage />} />
       <Route path="/vehicles/new" element={<VehicleFormPage />} />
