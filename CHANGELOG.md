@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-09-17
+
 ### Added
 
 - Added a collapse toggle to Kanban columns, showing just the name and card count in a narrow strip; state is remembered per board in the browser (#12)
