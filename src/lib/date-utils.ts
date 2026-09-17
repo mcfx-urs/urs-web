@@ -15,6 +15,14 @@ export function parseDateISO(iso: string): Date {
   return new Date(y, m - 1, d)
 }
 
+// Local wall-clock "yyyy-MM-dd HH:mm:ss" - the wire format urs-android's
+// naive-datetime fields use (beer log, fuel fills, baking plans). Never a
+// UTC conversion, matching the backend's own tolerance for device-local time.
+export function formatDateTimeLocal(date: Date): string {
+  const pad = (n: number) => String(n).padStart(2, '0')
+  return `${formatDateISO(date)} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`
+}
+
 // Monday-first grid: leading `null`s pad out to the month's first weekday.
 export function monthGrid(year: number, month: number): (Date | null)[] {
   const first = new Date(year, month, 1)

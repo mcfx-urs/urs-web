@@ -1,4 +1,5 @@
 import {
+  BeerIcon,
   ChoresIcon,
   ClockIcon,
   GearIcon,
@@ -24,6 +25,7 @@ const FEATURES = [
   { name: 'Kanban', icon: KanbanIcon, href: '/kanban' },
   { name: 'Life Map', icon: PinIcon, href: '/life-map' },
   { name: 'Work Time', icon: ClockIcon, href: '/worktime' },
+  { name: 'Beer log', icon: BeerIcon, href: '/beer' },
   { name: 'Vehicles', icon: VehicleIcon, href: '/vehicles' },
   { name: 'Settings', icon: GearIcon, href: '/settings' },
 ]

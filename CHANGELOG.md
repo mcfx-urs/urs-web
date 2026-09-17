@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- Added a Beer log page: quick-log buttons, history, daily/monthly charts, yearly summary (#22)
 - Added vehicle management: create, edit, delete, with an MFK-due badge (#27)
 - Added a Settings page for profile fields, change password, and default vehicle (#23)
 
