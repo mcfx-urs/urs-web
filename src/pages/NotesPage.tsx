@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import TopBar from '@/components/TopBar'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { deleteNote, fetchNotes, setNoteStatus, type NoteStatus, type NoteTag } from '@/lib/notes'
@@ -19,7 +19,19 @@ function formatNoteReminder(iso: string): string {
 
 export default function NotesPage() {
   const [tab, setTab] = useState<NoteStatus>('active')
-  const [tagFilter, setTagFilter] = useState<string | null>(null)
+  // In the URL (GitHub issue #29), not component state - survives unmount/
+  // remount when opening a note and pressing back, and keeps the browser's
+  // own back/forward buttons working as expected.
+  const [searchParams, setSearchParams] = useSearchParams()
+  const tagFilter = searchParams.get('tag')
+  const setTagFilter = (tag: string | null) => {
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev)
+      if (tag) next.set('tag', tag)
+      else next.delete('tag')
+      return next
+    })
+  }
   const queryClient = useQueryClient()
 
   const { data: notes, isLoading } = useQuery({

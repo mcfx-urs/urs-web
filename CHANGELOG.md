@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - Added color to Notes tag chips (list rows and filter pills), matching each tag's backend-assigned color (#30)
 
+### Fixed
+
+- Notes: the tag filter no longer resets when opening a note and navigating back (#29)
+
 ## [1.3.0] - 2026-09-17
 
 ### Added
