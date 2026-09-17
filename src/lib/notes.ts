@@ -2,6 +2,10 @@ import { apiFetch } from './api'
 
 export type NoteStatus = 'active' | 'completed'
 
+// Server-assigned and never changes once created (mcfx-urs/urs-backend#7) —
+// the client only ever sends a tag's name (see NoteInput below), never a color.
+export type NoteTag = { name: string; color: string }
+
 export type Note = {
   note_id: string
   note_user_id: string
@@ -10,7 +14,7 @@ export type Note = {
   note_reminder_at: string | null
   note_status: NoteStatus
   note_completed_at: string | null
-  tags: string[]
+  tags: NoteTag[]
   created_at: string
   updated_at: string
 }

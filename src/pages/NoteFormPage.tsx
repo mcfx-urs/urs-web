@@ -21,9 +21,13 @@ export default function NoteFormPage() {
     queryFn: () => fetchNotes(),
   })
   const existing = isEditing ? notes?.find((n) => n.note_id === id) : undefined
+  // Suggestions only ever need the tag's name — a brand-new tag's color is
+  // assigned server-side on save, and an existing tag's color isn't shown
+  // here (out of scope for mcfx-urs/urs-web#30, which only covers the list
+  // rows and filter pills).
   const allTags = useMemo(() => {
     const tags = new Set<string>()
-    notes?.forEach((n) => n.tags.forEach((t) => tags.add(t)))
+    notes?.forEach((n) => n.tags.forEach((t) => tags.add(t.name)))
     return Array.from(tags).sort()
   }, [notes])
 
@@ -63,7 +67,7 @@ function NoteForm({ existing, allTags }: { existing?: Note; allTags: string[] })
   const [reminderEnabled, setReminderEnabled] = useState(Boolean(existing?.note_reminder_at))
   const [reminderDate, setReminderDate] = useState(existing?.note_reminder_at ? existing.note_reminder_at.slice(0, 10) : '')
   const [reminderTime, setReminderTime] = useState(existing?.note_reminder_at ? existing.note_reminder_at.slice(11, 16) : '')
-  const [tags, setTags] = useState<string[]>(existing?.tags ?? [])
+  const [tags, setTags] = useState<string[]>(existing?.tags.map((t) => t.name) ?? [])
   const [tagInput, setTagInput] = useState('')
 
   const suggestions = useMemo(() => {

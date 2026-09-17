@@ -3,8 +3,9 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
 import TopBar from '@/components/TopBar'
 import { Button, buttonVariants } from '@/components/ui/button'
-import { deleteNote, fetchNotes, setNoteStatus, type NoteStatus } from '@/lib/notes'
+import { deleteNote, fetchNotes, setNoteStatus, type NoteStatus, type NoteTag } from '@/lib/notes'
 import { GLASS_BACKGROUND_GRADIENT_CLASS, GLASS_CARD_CLASS } from '@/lib/glass-style'
+import { readableTextColor } from '@/lib/color'
 
 // Matches urs-android's NotesHubScreen.formatReminder ("EEE, d MMM · HH:mm").
 // A "YYYY-MM-DDTHH:mm:ss" string (no offset) parses as local time per spec,
@@ -26,16 +27,19 @@ export default function NotesPage() {
     queryFn: () => fetchNotes(tab),
   })
 
+  // Deduped by name, not by object identity — a tag's color never changes
+  // once assigned (mcfx-urs/urs-backend#7), so any occurrence's color is
+  // authoritative for that name.
   const allTags = useMemo(() => {
-    const tags = new Set<string>()
-    notes?.forEach((n) => n.tags.forEach((t) => tags.add(t)))
-    return Array.from(tags).sort()
+    const byName = new Map<string, NoteTag>()
+    notes?.forEach((n) => n.tags.forEach((t) => byName.set(t.name, t)))
+    return Array.from(byName.values()).sort((a, b) => a.name.localeCompare(b.name))
   }, [notes])
 
   const filtered = useMemo(() => {
     if (!notes) return []
     if (!tagFilter) return notes
-    return notes.filter((n) => n.tags.includes(tagFilter))
+    return notes.filter((n) => n.tags.some((t) => t.name === tagFilter))
   }, [notes, tagFilter])
 
   const statusMutation = useMutation({
@@ -77,16 +81,24 @@ export default function NotesPage() {
             >
               All
             </button>
-            {allTags.map((tag) => (
-              <button
-                type="button"
-                key={tag}
-                className={`rounded-full px-3 py-1 text-xs font-semibold ${tagFilter === tag ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}`}
-                onClick={() => setTagFilter(tag)}
-              >
-                {tag}
-              </button>
-            ))}
+            {allTags.map((tag) => {
+              const isSelected = tagFilter === tag.name
+              return (
+                <button
+                  type="button"
+                  key={tag.name}
+                  className="rounded-full px-3 py-1 text-xs font-semibold"
+                  style={
+                    isSelected
+                      ? { backgroundColor: tag.color, color: readableTextColor(tag.color) }
+                      : { border: `1px solid ${tag.color}`, color: tag.color }
+                  }
+                  onClick={() => setTagFilter(tag.name)}
+                >
+                  {tag.name}
+                </button>
+              )
+            })}
           </div>
         )}
 
@@ -124,8 +136,12 @@ export default function NotesPage() {
               {note.tags.length > 0 && (
                 <div className="mt-2 flex flex-wrap gap-1">
                   {note.tags.map((tag) => (
-                    <span key={tag} className="rounded-full bg-muted px-2 py-0.5 text-[11px] text-muted-foreground">
-                      {tag}
+                    <span
+                      key={tag.name}
+                      className="rounded-full px-2 py-0.5 text-[11px] font-semibold"
+                      style={{ backgroundColor: tag.color, color: readableTextColor(tag.color) }}
+                    >
+                      {tag.name}
                     </span>
                   ))}
                 </div>
