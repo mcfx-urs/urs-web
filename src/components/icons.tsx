@@ -138,3 +138,12 @@ export function GearIcon({ className }: IconProps) {
     </svg>
   )
 }
+
+export function JournalIcon({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <rect x="4" y="5" width="16" height="15" rx="2" />
+      <path d="M4 9h16M8 3v3M16 3v3" />
+    </svg>
+  )
+}

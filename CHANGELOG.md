@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- Added Journal: a calendar-first, domain-organized replacement for Chores, running alongside it — month view with week numbers and multi-day event bars, a day view, a domain/type filter, and domain/type management, reusing the existing type editor (#28)
+
 - Added color to Notes tag chips (list rows and filter pills), matching each tag's backend-assigned color (#30)
 
 ## [1.3.0] - 2026-09-17

@@ -6,6 +6,7 @@ import {
   FuelIcon,
   GearIcon,
   InventoryIcon,
+  JournalIcon,
   KanbanIcon,
   NotesIcon,
   PinIcon,
@@ -23,6 +24,7 @@ import { GLASS_BACKGROUND_GRADIENT_CLASS } from '@/lib/glass-style'
 const FEATURES = [
   { name: 'Notes', icon: NotesIcon, href: '/notes' },
   { name: 'Chores', icon: ChoresIcon, href: '/chores' },
+  { name: 'Journal', icon: JournalIcon, href: '/journal' },
   { name: 'Inventory', icon: InventoryIcon, href: '/inventory' },
   { name: 'Shopping List', icon: ShoppingListIcon, href: '/shopping' },
   { name: 'Kanban', icon: KanbanIcon, href: '/kanban' },

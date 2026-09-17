@@ -15,6 +15,9 @@ import FuelStationsPage from '@/pages/FuelStationsPage'
 import FuelStatsPage from '@/pages/FuelStatsPage'
 import InventoriesPage from '@/pages/InventoriesPage'
 import InventoryDetailPage from '@/pages/InventoryDetailPage'
+import JournalDayPage from '@/pages/JournalDayPage'
+import JournalOverviewPage from '@/pages/JournalOverviewPage'
+import JournalPage from '@/pages/JournalPage'
 import KanbanBoardPage from '@/pages/KanbanBoardPage'
 import KanbanBoardsPage from '@/pages/KanbanBoardsPage'
 import LandingPage from '@/pages/LandingPage'
@@ -58,6 +61,11 @@ function App() {
       <Route path="/chores" element={<ChoresPage />} />
       <Route path="/chores/types/new" element={<TrackerTypeFormPage />} />
       <Route path="/chores/types/:id" element={<TrackerTypeFormPage />} />
+      <Route path="/journal" element={<JournalPage />} />
+      <Route path="/journal/overview" element={<JournalOverviewPage />} />
+      <Route path="/journal/day/:date" element={<JournalDayPage />} />
+      <Route path="/journal/types/new" element={<TrackerTypeFormPage />} />
+      <Route path="/journal/types/:id" element={<TrackerTypeFormPage />} />
       <Route path="/inventory" element={<InventoriesPage />} />
       <Route path="/inventory/:id" element={<InventoryDetailPage />} />
       <Route path="/shopping" element={<ShoppingListsPage />} />

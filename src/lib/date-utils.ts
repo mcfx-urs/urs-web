@@ -32,6 +32,19 @@ export function parseDateTimeLocal(raw: string): Date {
   return new Date(y, m - 1, d, h, min, s ?? 0)
 }
 
+// Standard ISO 8601 week number (Monday-first weeks, week 1 contains the
+// year's first Thursday) - used for Journal's month-grid week-number column
+// (mcfx-urs/urs-web#28).
+export function isoWeekNumber(date: Date): number {
+  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()))
+  const dayNum = (d.getUTCDay() + 6) % 7 // Mon=0..Sun=6
+  d.setUTCDate(d.getUTCDate() - dayNum + 3) // nearest Thursday
+  const firstThursday = new Date(Date.UTC(d.getUTCFullYear(), 0, 4))
+  const firstDayNum = (firstThursday.getUTCDay() + 6) % 7
+  firstThursday.setUTCDate(firstThursday.getUTCDate() - firstDayNum + 3)
+  return 1 + Math.round((d.getTime() - firstThursday.getTime()) / (7 * 86_400_000))
+}
+
 // Monday-first grid: leading `null`s pad out to the month's first weekday.
 export function monthGrid(year: number, month: number): (Date | null)[] {
   const first = new Date(year, month, 1)
