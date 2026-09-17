@@ -638,7 +638,7 @@ function KanbanCardDialog({
   onDeleted: () => void
 }) {
   const [title, setTitle] = useState(card.kanban_card_title)
-  const [description, setDescription] = useState(card.kanban_card_description)
+  const [description, setDescription] = useState(card.kanban_card_description ?? '')
   const [dueDate, setDueDate] = useState(card.kanban_card_due_date ? card.kanban_card_due_date.slice(0, 10) : '')
   const [priority, setPriority] = useState<KanbanPriority>(card.kanban_card_priority)
   const [noteId, setNoteId] = useState(card.kanban_card_note_id ?? '')

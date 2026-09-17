@@ -13,6 +13,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Added vehicle management: create, edit, delete, with an MFK-due badge (#27)
 - Added a Settings page for profile fields, change password, and default vehicle (#23)
 
+### Fixed
+
+- Fixed the Kanban card dialog crashing (and the app becoming unresponsive afterward) when opening a card with no description set (#20)
+
 ## [1.2.0] - 2026-09-17
 
 ### Added

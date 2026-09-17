@@ -44,7 +44,7 @@ const NUMBERED_LOOKALIKE_REGEX = /^\d+\. /
 const ESCAPE_CHARS = new Set(['\\', '*', '_', '~', '[', ']', '(', ')'])
 
 export function parseRichText(markup: string): StyledText {
-  const lines = markup.split('\n')
+  const lines = (markup ?? '').split('\n')
   const parts: StyledText[] = []
   lines.forEach((rawLine, index) => {
     if (index > 0) parts.push(plainStyledText('\n'))

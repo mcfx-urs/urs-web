@@ -31,7 +31,7 @@ export type KanbanCard = {
   kanban_card_column_id: string
   kanban_card_note_id: string | null
   kanban_card_title: string
-  kanban_card_description: string
+  kanban_card_description?: string
   kanban_card_due_date: string
   kanban_card_priority: KanbanPriority
   kanban_card_index: number
