@@ -18,6 +18,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Fixed
 
 - Fixed the Kanban card dialog crashing (and the app becoming unresponsive afterward) when opening a card with no description set (#20)
+- Fixed the Notes/Kanban rich-text field in Firefox: no keyboard input accepted at all, Space and Backspace/Delete sometimes misfiring or desyncing from the field's content, and a line break not showing until the next character was typed (#20)
 
 ## [1.2.0] - 2026-09-17
 

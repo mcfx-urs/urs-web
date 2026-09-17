@@ -62,18 +62,35 @@ export function readSelectionOffsets(root: HTMLElement): { start: number; end: n
 /** The DOM (node, offset) position within root corresponding to plain-text character offset target. */
 function nodeOffsetAt(root: HTMLElement, target: number): { node: Node; offset: number } {
   const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT)
-  let node = walker.nextNode()
+  const textNodes: Text[] = []
+  for (let n = walker.nextNode(); n; n = walker.nextNode()) textNodes.push(n as Text)
+
   let remaining = target
-  let last: Text | null = null
-  while (node) {
-    const text = node as Text
+  for (let i = 0; i < textNodes.length; i++) {
+    const text = textNodes[i]
     const len = text.textContent?.length ?? 0
-    if (remaining <= len) return { node: text, offset: remaining }
+    if (remaining < len) return { node: text, offset: remaining }
+    if (remaining === len) {
+      // Landing exactly at the end of the last text node: if the text ends
+      // with '\n', RichTextField.tsx renders a trailing <br> right after it
+      // for the empty final line to be visible at all. Placing the caret at
+      // the text node's own end (confirmed via live debug logging,
+      // 2026-09-17: the DOM already had the <br>, but the caret still
+      // visually stayed on the previous line until the next keystroke) is a
+      // node-boundary position Firefox renders as still being on the
+      // PRECEDING line - point past the <br> instead so the caret actually
+      // lands on the new line immediately.
+      if (i === textNodes.length - 1 && root.lastChild instanceof HTMLBRElement) {
+        return { node: root, offset: root.childNodes.length }
+      }
+      return { node: text, offset: remaining }
+    }
     remaining -= len
-    last = text
-    node = walker.nextNode()
   }
-  if (last) return { node: last, offset: last.textContent?.length ?? 0 }
+  if (textNodes.length > 0) {
+    const last = textNodes[textNodes.length - 1]
+    return { node: last, offset: last.textContent?.length ?? 0 }
+  }
   return { node: root, offset: 0 }
 }
 
