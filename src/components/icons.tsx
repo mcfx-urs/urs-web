@@ -102,6 +102,17 @@ export function KanbanIcon({ className }: IconProps) {
   )
 }
 
+export function VehicleIcon({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M5 16V11l2-5h10l2 5v5" />
+      <path d="M3 16h18v3H3Z" />
+      <circle cx="7.5" cy="16" r="1.5" />
+      <circle cx="16.5" cy="16" r="1.5" />
+    </svg>
+  )
+}
+
 export function GearIcon({ className }: IconProps) {
   return (
     <svg {...base} className={className}>

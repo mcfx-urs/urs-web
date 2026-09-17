@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- Added vehicle management: create, edit, delete, with an MFK-due badge (#27)
 - Added a Settings page for profile fields, change password, and default vehicle (#23)
 
 ## [1.2.0] - 2026-09-17
