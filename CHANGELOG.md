@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [1.4.0] - 2026-09-18
+
 ### Added
 
 - Added Journal: a calendar-first, domain-organized replacement for Chores, running alongside it — month view with week numbers and multi-day event bars, a day view, a domain/type filter, and domain/type management, reusing the existing type editor (#28)
