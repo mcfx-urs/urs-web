@@ -1,4 +1,5 @@
 import { apiFetch } from './api'
+import type { Tag } from './tags'
 
 // yyyy-MM-dd HH:mm:ss, device-local - matches the last-write-wins guard
 // format urs-backend expects on board/column/card updates.
@@ -35,7 +36,7 @@ export type KanbanCard = {
   kanban_card_due_date: string
   kanban_card_priority: KanbanPriority
   kanban_card_index: number
-  tags: string[]
+  tags: Tag[]
   checklist: KanbanChecklistItem[]
   created_at: string
   updated_at: string

@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- Notes and Kanban now share one tag pool and color per name (#32), matching the backend merge; tag-autocomplete in both features now comes from the new `GET /api/v1/tags` endpoint instead of only tags on already-loaded items. Kanban card tags now render in their assigned color, matching Notes, and gained an autocomplete suggestion list in the card editor.
+
 ## [1.4.0] - 2026-09-18
 
 ### Added

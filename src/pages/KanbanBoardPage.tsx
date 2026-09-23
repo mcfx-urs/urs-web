@@ -48,6 +48,8 @@ import {
 } from '@/lib/kanban'
 import { GLASS_BACKGROUND_GRADIENT_CLASS, GLASS_CARD_CLASS } from '@/lib/glass-style'
 import { fetchNotes } from '@/lib/notes'
+import { readableTextColor } from '@/lib/color'
+import { fetchTags } from '@/lib/tags'
 
 const COL_PREFIX = 'col:'
 const CARD_PREFIX = 'card:'
@@ -145,6 +147,11 @@ export default function KanbanBoardPage() {
     queryKey: ['kanban-board', boardId],
     queryFn: () => fetchKanbanBoard(boardId),
   })
+
+  // Shared tag pool (mcfx-urs/urs-backend#11), for the card dialog's tag
+  // autocomplete — not just tags already on this board's own cards.
+  const { data: allTagsData } = useQuery({ queryKey: ['tags'], queryFn: fetchTags })
+  const allTags = useMemo(() => (allTagsData ?? []).map((t) => t.name).sort(), [allTagsData])
 
   // Optimistic drag overlay for the board, kept as a plain, separate piece
   // of React state rather than writing straight into the query cache - see
@@ -403,6 +410,7 @@ export default function KanbanBoardPage() {
       {openCard && (
         <KanbanCardDialog
           card={openCard}
+          allTags={allTags}
           onClose={() => setOpenCardId(null)}
           onSaved={invalidate}
           onSaveSuccess={() => {
@@ -560,8 +568,12 @@ function CardView({ card, onClick }: { card: KanbanCard; onClick: () => void }) 
       {card.tags.length > 0 && (
         <div className="mt-1 flex flex-wrap gap-1">
           {card.tags.map((tag) => (
-            <span key={tag} className="rounded-full bg-muted px-1.5 py-0.5 text-[10px] text-muted-foreground">
-              {tag}
+            <span
+              key={tag.name}
+              className="rounded-full px-1.5 py-0.5 text-[10px] font-semibold"
+              style={{ backgroundColor: tag.color, color: readableTextColor(tag.color) }}
+            >
+              {tag.name}
             </span>
           ))}
         </div>
@@ -594,8 +606,12 @@ function CardPreview({ card }: { card: KanbanCard }) {
       {card.tags.length > 0 && (
         <div className="mt-1 flex flex-wrap gap-1">
           {card.tags.map((tag) => (
-            <span key={tag} className="rounded-full bg-muted px-1.5 py-0.5 text-[10px] text-muted-foreground">
-              {tag}
+            <span
+              key={tag.name}
+              className="rounded-full px-1.5 py-0.5 text-[10px] font-semibold"
+              style={{ backgroundColor: tag.color, color: readableTextColor(tag.color) }}
+            >
+              {tag.name}
             </span>
           ))}
         </div>
@@ -626,12 +642,14 @@ function ColumnPreview({ column }: { column: KanbanColumn }) {
 
 function KanbanCardDialog({
   card,
+  allTags,
   onClose,
   onSaved,
   onSaveSuccess,
   onDeleted,
 }: {
   card: KanbanCard
+  allTags: string[]
   onClose: () => void
   onSaved: () => void
   onSaveSuccess: () => void
@@ -642,8 +660,14 @@ function KanbanCardDialog({
   const [dueDate, setDueDate] = useState(card.kanban_card_due_date ? card.kanban_card_due_date.slice(0, 10) : '')
   const [priority, setPriority] = useState<KanbanPriority>(card.kanban_card_priority)
   const [noteId, setNoteId] = useState(card.kanban_card_note_id ?? '')
-  const [tags, setTags] = useState<string[]>(card.tags)
+  const [tags, setTags] = useState<string[]>(card.tags.map((t) => t.name))
   const [tagInput, setTagInput] = useState('')
+
+  const tagSuggestions = useMemo(() => {
+    const query = tagInput.trim().toLowerCase()
+    if (!query) return []
+    return allTags.filter((t) => !tags.includes(t) && t.toLowerCase().includes(query))
+  }, [tagInput, allTags, tags])
   const [checklistText, setChecklistText] = useState('')
   // GitHub issue #15 - a failed save keeps the dialog open (so edits aren't
   // lost) and surfaces this instead of failing silently; success closes the
@@ -786,6 +810,20 @@ function KanbanCardDialog({
               }}
               placeholder="Type and press Enter to add"
             />
+            {tagSuggestions.length > 0 && (
+              <div className="flex flex-col gap-1">
+                {tagSuggestions.map((s) => (
+                  <button
+                    key={s}
+                    type="button"
+                    className="rounded-lg border border-border px-2 py-1 text-left text-sm hover:bg-muted"
+                    onClick={() => addTag(s)}
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="flex flex-col gap-2">

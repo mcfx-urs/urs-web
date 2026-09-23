@@ -9,27 +9,26 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { GLASS_BACKGROUND_GRADIENT_CLASS } from '@/lib/glass-style'
 import { createNote, fetchNotes, updateNote, type Note } from '@/lib/notes'
+import { fetchTags } from '@/lib/tags'
 
 export default function NoteFormPage() {
   const { id } = useParams<{ id: string }>()
   const isEditing = Boolean(id)
 
-  // Fetched unconditionally (not just when editing): also drives tag
-  // suggestions for a brand-new note, not only the existing-note lookup.
   const { data: notes, isLoading } = useQuery({
     queryKey: ['notes', 'all'],
     queryFn: () => fetchNotes(),
+    enabled: isEditing,
   })
   const existing = isEditing ? notes?.find((n) => n.note_id === id) : undefined
-  // Suggestions only ever need the tag's name — a brand-new tag's color is
-  // assigned server-side on save, and an existing tag's color isn't shown
-  // here (out of scope for mcfx-urs/urs-web#30, which only covers the list
-  // rows and filter pills).
-  const allTags = useMemo(() => {
-    const tags = new Set<string>()
-    notes?.forEach((n) => n.tags.forEach((t) => tags.add(t.name)))
-    return Array.from(tags).sort()
-  }, [notes])
+  // The shared tag pool (mcfx-urs/urs-backend#11), not just tags on
+  // already-loaded notes — a tag only ever used on a Kanban card would
+  // otherwise never suggest here. Suggestions only ever need the tag's
+  // name — a brand-new tag's color is assigned server-side on save, and an
+  // existing tag's color isn't shown here (out of scope for
+  // mcfx-urs/urs-web#30, which only covers the list rows and filter pills).
+  const { data: allTagsData } = useQuery({ queryKey: ['tags'], queryFn: fetchTags })
+  const allTags = useMemo(() => (allTagsData ?? []).map((t) => t.name).sort(), [allTagsData])
 
   if (isEditing && isLoading) {
     return (

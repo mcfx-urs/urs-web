@@ -3,9 +3,10 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link, useSearchParams } from 'react-router-dom'
 import TopBar from '@/components/TopBar'
 import { Button, buttonVariants } from '@/components/ui/button'
-import { deleteNote, fetchNotes, setNoteStatus, type NoteStatus, type NoteTag } from '@/lib/notes'
+import { deleteNote, fetchNotes, setNoteStatus, type NoteStatus } from '@/lib/notes'
 import { GLASS_BACKGROUND_GRADIENT_CLASS, GLASS_CARD_CLASS } from '@/lib/glass-style'
 import { readableTextColor } from '@/lib/color'
+import type { Tag } from '@/lib/tags'
 
 // Matches urs-android's NotesHubScreen.formatReminder ("EEE, d MMM · HH:mm").
 // A "YYYY-MM-DDTHH:mm:ss" string (no offset) parses as local time per spec,
@@ -43,7 +44,7 @@ export default function NotesPage() {
   // once assigned (mcfx-urs/urs-backend#7), so any occurrence's color is
   // authoritative for that name.
   const allTags = useMemo(() => {
-    const byName = new Map<string, NoteTag>()
+    const byName = new Map<string, Tag>()
     notes?.forEach((n) => n.tags.forEach((t) => byName.set(t.name, t)))
     return Array.from(byName.values()).sort((a, b) => a.name.localeCompare(b.name))
   }, [notes])
