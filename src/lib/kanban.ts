@@ -46,6 +46,9 @@ export type KanbanColumn = {
   kanban_column_id: string
   kanban_column_board_id: string
   kanban_column_name: string
+  // Applied server-side to a new card created in this column
+  // (mcfx-urs/urs-backend#13) - absent when unset.
+  kanban_column_default_tag_name?: string
   kanban_column_index: number
   cards: KanbanCard[]
   created_at: string
@@ -105,20 +108,20 @@ export async function deleteKanbanBoard(id: string): Promise<void> {
   await ok(res, 'delete board')
 }
 
-export async function createKanbanColumn(boardId: string, name: string): Promise<KanbanColumn> {
+export async function createKanbanColumn(boardId: string, name: string, defaultTag = ''): Promise<KanbanColumn> {
   const res = await apiFetch('/api/v1/kanban/column', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ board_id: boardId, name }),
+    body: JSON.stringify({ board_id: boardId, name, default_tag: defaultTag }),
   })
   return json(res, 'create column')
 }
 
-export async function renameKanbanColumn(id: string, name: string): Promise<void> {
+export async function renameKanbanColumn(id: string, name: string, defaultTag = ''): Promise<void> {
   const res = await apiFetch(`/api/v1/kanban/column/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name, updated_at: nowStamp() }),
+    body: JSON.stringify({ name, default_tag: defaultTag, updated_at: nowStamp() }),
   })
   await ok(res, 'rename column')
 }

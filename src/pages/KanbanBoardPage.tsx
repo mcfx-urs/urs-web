@@ -108,6 +108,7 @@ export default function KanbanBoardPage() {
   const queryClient = useQueryClient()
   const [error, setError] = useState<string | null>(null)
   const [newColumnName, setNewColumnName] = useState('')
+  const [newColumnDefaultTag, setNewColumnDefaultTag] = useState('')
   const [addingCardTo, setAddingCardTo] = useState<string | null>(null)
   const [newCardTitle, setNewCardTitle] = useState('')
   const [openCardId, setOpenCardId] = useState<string | null>(null)
@@ -167,10 +168,11 @@ export default function KanbanBoardPage() {
   const invalidate = () => queryClient.invalidateQueries({ queryKey: ['kanban-board', boardId] })
 
   const createColumnMutation = useMutation({
-    mutationFn: (name: string) => createKanbanColumn(boardId, name),
+    mutationFn: ({ name, defaultTag }: { name: string; defaultTag: string }) => createKanbanColumn(boardId, name, defaultTag),
     onSuccess: () => {
       invalidate()
       setNewColumnName('')
+      setNewColumnDefaultTag('')
     },
   })
 
@@ -314,7 +316,7 @@ export default function KanbanBoardPage() {
 
   function handleCreateColumn(e: FormEvent) {
     e.preventDefault()
-    if (newColumnName.trim()) createColumnMutation.mutate(newColumnName.trim())
+    if (newColumnName.trim()) createColumnMutation.mutate({ name: newColumnName.trim(), defaultTag: newColumnDefaultTag.trim() })
   }
 
   return (
@@ -384,6 +386,11 @@ export default function KanbanBoardPage() {
                     placeholder="New column name"
                     value={newColumnName}
                     onChange={(e) => setNewColumnName(e.target.value)}
+                  />
+                  <Input
+                    placeholder="Default tag (optional)"
+                    value={newColumnDefaultTag}
+                    onChange={(e) => setNewColumnDefaultTag(e.target.value)}
                   />
                   <Button type="submit" size="sm" disabled={createColumnMutation.isPending}>
                     Add column
