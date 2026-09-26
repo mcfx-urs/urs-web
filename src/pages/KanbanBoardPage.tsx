@@ -33,6 +33,7 @@ import {
   createKanbanChecklistItem,
   createKanbanColumn,
   deleteKanbanCard,
+  markKanbanCardDone,
   deleteKanbanChecklistItem,
   deleteKanbanColumn,
   fetchKanbanBoard,
@@ -707,6 +708,12 @@ function KanbanCardDialog({
     onSuccess: onDeleted,
   })
 
+  const markDoneMutation = useMutation({
+    mutationFn: () => markKanbanCardDone(card.kanban_card_id),
+    onSuccess: onSaveSuccess,
+    onError: () => setSaveError('Could not mark the card done.'),
+  })
+
   const addChecklistMutation = useMutation({
     mutationFn: (text: string) => createKanbanChecklistItem(card.kanban_card_id, text),
     onSuccess: () => {
@@ -895,6 +902,9 @@ function KanbanCardDialog({
             </Button>
             <Button type="button" variant="outline" onClick={onClose}>
               Cancel
+            </Button>
+            <Button type="button" variant="outline" disabled={markDoneMutation.isPending} onClick={() => markDoneMutation.mutate()}>
+              Done
             </Button>
             <Button type="button" variant="destructive" onClick={() => deleteMutation.mutate()}>
               Delete

@@ -172,6 +172,14 @@ export async function deleteKanbanCard(id: string): Promise<void> {
   await ok(res, 'delete card')
 }
 
+// Atomic server-side action (mcfx-urs/urs-backend#14): tags the card "done"
+// and moves it into a "Done" column on its board, creating that column if
+// none exists yet.
+export async function markKanbanCardDone(id: string): Promise<KanbanCard> {
+  const res = await apiFetch(`/api/v1/kanban/card/${id}/mark-done`, { method: 'POST' })
+  return json(res, 'mark card done')
+}
+
 export async function createKanbanChecklistItem(cardId: string, text: string): Promise<KanbanChecklistItem> {
   const res = await apiFetch('/api/v1/kanban/checklist-item', {
     method: 'POST',
