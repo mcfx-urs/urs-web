@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [1.6.0] - 2026-09-26
+
 ### Added
 
 - Kanban: an optional default tag when creating a column, applied automatically to a card created in it (#34)
