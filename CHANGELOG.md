@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Added
 
 - Kanban: an optional default tag when creating a column, applied automatically to a card created in it (#34)
+- Life Map: new "Today" time range preset (midnight to now, local time), now the default when Life Map opens (#33)
 
 ## [1.5.0] - 2026-09-24
 

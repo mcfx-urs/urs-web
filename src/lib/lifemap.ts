@@ -18,7 +18,12 @@ export type LifeMapPoint = {
   capturedAt: Date
 }
 
+// `today`'s `days` value is never read - sinceDate special-cases it below to
+// a real calendar-day boundary rather than a rolling window, unlike every
+// other preset. Kept at 1 (same order of magnitude as `last_day`) purely for
+// type-shape consistency with the rest of this list.
 export const TIME_RANGES = [
+  { key: 'today', label: 'Today', days: 1 },
   { key: 'last_day', label: 'Last day', days: 1 },
   { key: 'last_week', label: 'Last week', days: 7 },
   { key: 'last_month', label: 'Last month', days: 30 },
@@ -31,6 +36,11 @@ export const TIME_RANGES = [
 export type TimeRangeKey = (typeof TIME_RANGES)[number]['key']
 
 export function sinceDate(rangeKey: TimeRangeKey): Date | null {
+  if (rangeKey === 'today') {
+    const midnight = new Date()
+    midnight.setHours(0, 0, 0, 0)
+    return midnight
+  }
   const range = TIME_RANGES.find((r) => r.key === rangeKey)
   if (!range || range.days === null) return null
   const since = new Date()

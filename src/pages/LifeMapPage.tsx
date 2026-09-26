@@ -51,7 +51,7 @@ function FitBounds({ points }: { points: LifeMapPoint[] }) {
 }
 
 export default function LifeMapPage() {
-  const [rangeKey, setRangeKey] = useState<TimeRangeKey>('last_day')
+  const [rangeKey, setRangeKey] = useState<TimeRangeKey>('today')
   const [muted, setMuted] = useState(false)
 
   const { data: allPoints, isLoading } = useQuery({
