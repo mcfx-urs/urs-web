@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- About view (app version + changelog), reachable by any user via an Info icon in the top bar; merged into the former admin-only `/admin` page, now `/about` (#36)
+
 ## [1.6.0] - 2026-09-26
 
 ### Added

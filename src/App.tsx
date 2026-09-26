@@ -1,6 +1,6 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { useAuth } from '@/auth/AuthContext'
-import AdminPage from '@/pages/AdminPage'
+import AboutPage from '@/pages/AboutPage'
 import BakingHistoryPage from '@/pages/BakingHistoryPage'
 import BakingHubPage from '@/pages/BakingHubPage'
 import BakingPlanDetailPage from '@/pages/BakingPlanDetailPage'
@@ -38,7 +38,7 @@ import WorkTimePage from '@/pages/WorkTimePage'
 import WorkTimeSettingsPage from '@/pages/WorkTimeSettingsPage'
 
 function App() {
-  const { isAuthenticated, isSuperUser, ready } = useAuth()
+  const { isAuthenticated, ready } = useAuth()
 
   if (!ready) return null
 
@@ -96,7 +96,7 @@ function App() {
       <Route path="/service" element={<ServicePage />} />
       <Route path="/service/new" element={<ServiceFormPage />} />
       <Route path="/service/:id" element={<ServiceFormPage />} />
-      <Route path="/admin" element={isSuperUser ? <AdminPage /> : <Navigate to="/" replace />} />
+      <Route path="/about" element={<AboutPage />} />
     </Routes>
   )
 }
