@@ -28,7 +28,7 @@ const FEATURES = [
   { name: 'Inventory', icon: InventoryIcon, href: '/inventory' },
   { name: 'Shopping List', icon: ShoppingListIcon, href: '/shopping' },
   { name: 'Kanban', icon: KanbanIcon, href: '/kanban' },
-  { name: 'Life Map', icon: PinIcon, href: '/life-map' },
+  { name: 'Breadcrumbs', icon: PinIcon, href: '/breadcrumbs' },
   { name: 'Work Time', icon: ClockIcon, href: '/worktime' },
   { name: 'Fuel', icon: FuelIcon, href: '/fuel' },
   { name: 'Beer log', icon: BeerIcon, href: '/beer' },

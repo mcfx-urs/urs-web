@@ -11,7 +11,7 @@ export type LocationHistoryEntry = {
   updated_at: string
 }
 
-export type LifeMapPoint = {
+export type BreadcrumbsPoint = {
   id: string
   latitude: number
   longitude: number
@@ -84,10 +84,10 @@ async function fetchLocationHistoryPage(from: string): Promise<LocationHistoryEn
  * last row of each page - mirrors urs-android's
  * `LocationHistoryRepository.fetchAllPages`, needed for the same reason: the
  * endpoint's hard cap (10000 rows/call) is nowhere near "the whole history"
- * once a life map has been running for a while.
+ * once Breadcrumbs has been running for a while.
  */
-export async function fetchLocationHistory(): Promise<LifeMapPoint[]> {
-  const points: LifeMapPoint[] = []
+export async function fetchLocationHistory(): Promise<BreadcrumbsPoint[]> {
+  const points: BreadcrumbsPoint[] = []
   let from = EPOCH_START
   while (true) {
     const page = await fetchLocationHistoryPage(from)

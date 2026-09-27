@@ -21,7 +21,7 @@ import JournalPage from '@/pages/JournalPage'
 import KanbanBoardPage from '@/pages/KanbanBoardPage'
 import KanbanBoardsPage from '@/pages/KanbanBoardsPage'
 import LandingPage from '@/pages/LandingPage'
-import LifeMapPage from '@/pages/LifeMapPage'
+import BreadcrumbsPage from '@/pages/BreadcrumbsPage'
 import LoginPage from '@/pages/LoginPage'
 import NoteFormPage from '@/pages/NoteFormPage'
 import NotesPage from '@/pages/NotesPage'
@@ -72,7 +72,7 @@ function App() {
       <Route path="/shopping/:id" element={<ShoppingListDetailPage />} />
       <Route path="/kanban" element={<KanbanBoardsPage />} />
       <Route path="/kanban/:id" element={<KanbanBoardPage />} />
-      <Route path="/life-map" element={<LifeMapPage />} />
+      <Route path="/breadcrumbs" element={<BreadcrumbsPage />} />
       <Route path="/worktime" element={<WorkTimePage />} />
       <Route path="/worktime/settings" element={<WorkTimeSettingsPage />} />
       <Route path="/worktime/new" element={<WorkTimeEntryFormPage />} />

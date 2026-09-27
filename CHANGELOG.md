@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- Renamed "Life Map" to "Breadcrumbs" — route, page/lib files, and code identifiers all updated (#37)
+
 ## [1.7.0] - 2026-09-26
 
 ### Added

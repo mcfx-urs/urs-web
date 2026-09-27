@@ -3,10 +3,10 @@ import { useQuery } from '@tanstack/react-query'
 import { MapContainer, Polyline, TileLayer, useMap } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
 import TopBar from '@/components/TopBar'
-import { fetchLocationHistory, sinceDate, TIME_RANGES, type LifeMapPoint, type TimeRangeKey } from '@/lib/lifemap'
+import { fetchLocationHistory, sinceDate, TIME_RANGES, type BreadcrumbsPoint, type TimeRangeKey } from '@/lib/breadcrumbs'
 import { GLASS_BACKGROUND_GRADIENT_CLASS } from '@/lib/glass-style'
 
-// Default life-map track gradient, oldest -> newest: cyan -> blue -> magenta.
+// Default breadcrumbs track gradient, oldest -> newest: cyan -> blue -> magenta.
 // Same default stops as urs-android's LocationHistorySettingsStore - chosen
 // there to sit outside the hue family OSM Carto's own tiles use.
 const GRADIENT_STOPS = ['#00e5ff', '#2962ff', '#d500f9']
@@ -22,7 +22,7 @@ function rgbToHex([r, g, b]: [number, number, number]): string {
 
 // Interpolates piecewise across `stops` by `fraction` in 0..1 - one segment
 // per consecutive point pair gets its own blended colour, approximating a
-// multi-colour polyline the same way urs-android's LifeMapView does (Leaflet
+// multi-colour polyline the same way urs-android's BreadcrumbsView does (Leaflet
 // has no native per-segment-colour polyline either).
 function blendGradientStops(stops: string[], fraction: number): string {
   const clamped = Math.min(1, Math.max(0, fraction))
@@ -34,7 +34,7 @@ function blendGradientStops(stops: string[], fraction: number): string {
   return rgbToHex([r1 + (r2 - r1) * t, g1 + (g2 - g1) * t, b1 + (b2 - b1) * t])
 }
 
-function FitBounds({ points }: { points: LifeMapPoint[] }) {
+function FitBounds({ points }: { points: BreadcrumbsPoint[] }) {
   const map = useMap()
   useEffect(() => {
     if (points.length === 0) return
@@ -50,12 +50,12 @@ function FitBounds({ points }: { points: LifeMapPoint[] }) {
   return null
 }
 
-export default function LifeMapPage() {
+export default function BreadcrumbsPage() {
   const [rangeKey, setRangeKey] = useState<TimeRangeKey>('today')
   const [muted, setMuted] = useState(false)
 
   const { data: allPoints, isLoading } = useQuery({
-    queryKey: ['lifemap'],
+    queryKey: ['breadcrumbs'],
     queryFn: fetchLocationHistory,
   })
 
@@ -69,7 +69,7 @@ export default function LifeMapPage() {
     <div className={`min-h-svh bg-background ${GLASS_BACKGROUND_GRADIENT_CLASS}`}>
       <TopBar />
       <main className="mx-auto max-w-4xl px-6 py-10">
-        <h1 className="mb-6 text-base font-bold">Life Map</h1>
+        <h1 className="mb-6 text-base font-bold">Breadcrumbs</h1>
 
         <div className="mb-4 flex flex-wrap items-center gap-3">
           <select
@@ -110,7 +110,7 @@ export default function LifeMapPage() {
             at initial mount (via a useState initializer) and never re-applies it on
             prop changes, so toggling it directly there has no visible effect. */}
         {!isLoading && points.length > 0 && (
-          <div className={`overflow-hidden rounded-xl border border-border ${muted ? 'life-map-muted' : ''}`}>
+          <div className={`overflow-hidden rounded-xl border border-border ${muted ? 'breadcrumbs-muted' : ''}`}>
             <MapContainer
               center={[points[points.length - 1].latitude, points[points.length - 1].longitude]}
               zoom={12}
